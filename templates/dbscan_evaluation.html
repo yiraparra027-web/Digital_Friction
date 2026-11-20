@@ -1,0 +1,202 @@
+{% extends 'base.html' %}
+{% block title %}Fiabilidad de alertas — Precisión del diagnóstico{% endblock %}
+
+{% block content %}
+
+<!-- ENCABEZADO -->
+<section class="py-5" style="background:linear-gradient(135deg,#0B3D91 0%,#0B3D91 60%,#0B3D91 100%);color:white;">
+  <div class="container">
+    <div class="row align-items-center">
+      <div class="col-lg-8">
+        <span class="badge bg-brand px-3 py-2 mb-3 fs-6">Precisión del diagnóstico · Fiabilidad de alertas</span>
+        <h1 class="display-4 fw-bold mb-3">
+          Fiabilidad de alertas <span style="color:#00ACC1;">DBSCAN</span>
+        </h1>
+        <p class="lead opacity-75">
+          Validación interna del agrupamiento por densidad mediante métricas de cohesión, separación
+          entre conglomerados y análisis comparativo de combinaciones de hiperparámetros en <strong>Chía y Sabana Centro</strong>.
+        </p>
+      </div>
+      <div class="col-lg-4 mt-4 mt-lg-0">
+        <div class="row g-3">
+          <div class="col-6">
+            <div class="rounded-4 p-3 text-center" style="background:rgba(255,255,255,.08);">
+              <div class="fs-2 fw-bold text-accent">{{ results.n_clusters }}</div>
+              <div class="small opacity-75">Clústeres</div>
+            </div>
+          </div>
+          <div class="col-6">
+            <div class="rounded-4 p-3 text-center" style="background:rgba(255,255,255,.08);">
+              <div class="fs-2 fw-bold text-warning">{{ results.noise_pct }}%</div>
+              <div class="small opacity-75">% Atípicos</div>
+            </div>
+          </div>
+          <div class="col-6">
+            <div class="rounded-4 p-3 text-center" style="background:rgba(255,255,255,.08);">
+              <div class="fs-2 fw-bold text-info">{{ results.silhouette }}</div>
+              <div class="small opacity-75">Coef. Silueta</div>
+            </div>
+          </div>
+          <div class="col-6">
+            <div class="rounded-4 p-3 text-center" style="background:rgba(255,255,255,.08);">
+              <div class="fs-2 fw-bold text-danger">{{ results.davies_bouldin }}</div>
+              <div class="small opacity-75">Índice DB</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="container py-5">
+
+<!-- MÉTRICAS INTERNAS -->
+<section class="mb-5">
+  <div class="d-flex align-items-center gap-3 mb-4">
+    <div class="rounded-circle d-flex align-items-center justify-content-center fw-bold text-white"
+         style="width:40px;height:40px;background:#0B3D91;">1</div>
+    <h2 class="fw-bold mb-0">Métricas de Validación Interna</h2>
+  </div>
+
+  <div class="row g-4">
+    <div class="col-lg-4">
+      <div class="card border-0 shadow-sm p-4 h-100">
+        <h5 class="fw-bold mb-3"><i class="bi bi-bar-chart-line me-2 text-accent"></i>Coeficiente de Silueta</h5>
+        <div class="display-5 fw-bold text-accent mb-3">{{ results.silhouette }}</div>
+        <div class="progress mb-3" style="height:10px;">
+          <div class="progress-bar bg-brand" style="width:{{ ((results.silhouette + 1) / 2 * 100)|round(1) }}%;"></div>
+        </div>
+        <p class="text-muted small mb-0">
+          Mide qué tan cohesionadas están las empresas dentro de su conglomerado frente al grupo vecino (rango -1 a 1; mayor es mejor).
+        </p>
+      </div>
+    </div>
+
+    <div class="col-lg-4">
+      <div class="card border-0 shadow-sm p-4 h-100">
+        <h5 class="fw-bold mb-3"><i class="bi bi-diagram-3 me-2 text-info"></i>Índice Davies-Bouldin</h5>
+        <div class="display-5 fw-bold text-info mb-3">{{ results.davies_bouldin }}</div>
+        <div class="progress mb-3" style="height:10px;">
+          <div class="progress-bar bg-info" style="width:{{ [10, (100 - results.davies_bouldin * 30)|round(1)]|max }}%;"></div>
+        </div>
+        <p class="text-muted small mb-0">
+          Evalúa la relación entre dispersión interna y distancia entre grupos. Valores inferiores a 1,0 confirman buena separación.
+        </p>
+      </div>
+    </div>
+
+    <div class="col-lg-4">
+      <div class="card border-0 shadow-sm p-4 h-100">
+        <h5 class="fw-bold mb-3"><i class="bi bi-speedometer2 me-2 text-warning"></i>Índice Calinski-Harabasz</h5>
+        <div class="display-5 fw-bold text-warning mb-3">{{ results.calinski_harabasz }}</div>
+        <p class="text-muted small">
+          Razón entre la varianza entre grupos y la varianza interna. Valores altos confirman agrupaciones densas y definidas.
+        </p>
+        <div class="alert alert-success mt-auto mb-0 small">
+          DBSCAN valida la estructura sin fijar previamente el número de clústeres, aislando las empresas atípicas.
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ANÁLISIS COMPARATIVO -->
+<section class="mb-5">
+  <div class="d-flex align-items-center gap-3 mb-4">
+    <div class="rounded-circle d-flex align-items-center justify-content-center fw-bold text-white"
+         style="width:40px;height:40px;background:#0B3D91;">2</div>
+    <h2 class="fw-bold mb-0">Evaluación Comparativa de Hiperparámetros</h2>
+  </div>
+
+  <div class="row g-4">
+    <div class="col-lg-7">
+      <div class="card border-0 shadow-sm p-4 h-100">
+        <h5 class="fw-bold mb-2"><i class="bi bi-graph-up-arrow me-2 text-accent"></i>Coeficiente de Silueta vs. Proporción de Casos Atípicos</h5>
+        <p class="text-muted small mb-3">
+          Comparación de las mejores configuraciones evaluadas en la búsqueda sistemática de parámetros.
+        </p>
+        <img src="{{ url_for('static', filename='img/dbscan/dbscan_grid_eval.png') }}"
+             alt="Comparación de hiperparámetros DBSCAN"
+             class="img-fluid rounded-3 border mt-auto">
+      </div>
+    </div>
+
+    <div class="col-lg-5">
+      <div class="card border-0 shadow-sm p-4 h-100">
+        <h5 class="fw-bold mb-3"><i class="bi bi-trophy me-2 text-accent"></i>Configuración Óptima</h5>
+        <div class="row g-3 mb-3">
+          <div class="col-6">
+            <div class="rounded-3 p-3 text-center" style="background:#F5F7FA;">
+              <div class="small text-muted mb-1">Radio ε óptimo</div>
+              <div class="display-6 fw-bold text-accent">{{ results.best_eps }}</div>
+            </div>
+          </div>
+          <div class="col-6">
+            <div class="rounded-3 p-3 text-center" style="background:#F5F7FA;">
+              <div class="small text-muted mb-1">Mínimo muestras</div>
+              <div class="display-6 fw-bold text-accent">{{ results.best_min_samples }}</div>
+            </div>
+          </div>
+        </div>
+        <ul class="text-muted small mb-3">
+          <li>Equilibrio óptimo entre cohesión interna (Silueta = {{ results.silhouette }}) y porcentaje controlado de ruido ({{ results.noise_pct }} %).</li>
+          <li>Aislamiento claro de las empresas de Chía con rezago digital atípico.</li>
+        </ul>
+        <div class="mt-auto text-center">
+          <img src="{{ url_for('static', filename='img/dbscan/dbscan_clusters_2d.png') }}"
+               alt="Conglomerados detectados por DBSCAN en el plano 2D"
+               class="img-fluid rounded-3 border">
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TABLA DE BÚSQUEDA EN GRILLA -->
+<section class="mb-5">
+  <div class="card border-0 shadow-sm p-4">
+    <h5 class="fw-bold mb-4"><i class="bi bi-table me-2 text-accent"></i>Tabla Comparativa de Combinaciones Evaluadas</h5>
+    <div class="table-responsive">
+      <table class="table table-hover align-middle mb-0">
+        <thead class="table-light">
+          <tr>
+            <th>Radio ε</th>
+            <th>Mínimo Muestras</th>
+            <th>Clústeres</th>
+            <th>% Atípicos</th>
+            <th>Coef. Silueta ↑</th>
+            <th>Davies-Bouldin ↓</th>
+            <th>Calinski-Harabasz ↑</th>
+            <th>Estado</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for r in results.grid_results if r.silhouette is not none %}
+          <tr class="{{ 'table-success fw-semibold' if r.is_best else '' }}">
+            <td>{{ r.eps }}</td>
+            <td>{{ r.min_samples }}</td>
+            <td>{{ r.n_clusters }}</td>
+            <td>{{ r.noise_pct }}%</td>
+            <td>{{ r.silhouette }}</td>
+            <td>{{ r.davies_bouldin }}</td>
+            <td>{{ r.calinski_harabasz }}</td>
+            <td>
+              {% if r.is_best %}
+              <span class="badge bg-brand">Óptimo</span>
+              {% else %}
+              <span class="badge bg-secondary">Evaluado</span>
+              {% endif %}
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+</div>
+{% endblock %}
+
+

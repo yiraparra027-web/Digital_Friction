@@ -1,0 +1,204 @@
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+
+/* ==========================================================================
+   Paleta global · Digital Friction Chía
+   Primario  : #0B3D91 / #1565C0   · Secundario: #00ACC1 / #00897B
+   Fondo     : #F5F7FA / #FFFFFF   · Texto     : #1C2B3A / #263238
+   Éxito     : #2E7D32             · Alerta    : #F9A825 · Error: #C62828
+   Neutro    : #607D8B
+   ========================================================================== */
+:root {
+    --df-primary: #0B3D91;
+    --df-primary-2: #1565C0;
+    --df-primary-rgb: 11, 61, 145;
+    --df-secondary: #00ACC1;
+    --df-secondary-2: #00897B;
+    --df-bg: #F5F7FA;
+    --df-card: #FFFFFF;
+    --df-ink: #1C2B3A;
+    --df-ink-2: #263238;
+    --df-success: #2E7D32;
+    --df-warning: #F9A825;
+    --df-danger: #C62828;
+    --df-muted: #607D8B;
+
+    /* alias heredados (compatibilidad con plantillas previas) */
+    --df-deep: var(--df-primary);
+    --df-forest: var(--df-primary-2);
+    --df-emerald: var(--df-secondary-2);
+    --df-mint: var(--df-secondary);
+    --df-amber: var(--df-warning);
+
+    /* Sobrescritura de variables de Bootstrap 5.3 */
+    --bs-body-color: #1C2B3A;
+    --bs-body-bg: #F5F7FA;
+    --bs-primary: #1565C0;
+    --bs-primary-rgb: 21, 101, 192;
+    --bs-success: #2E7D32;
+    --bs-success-rgb: 46, 125, 50;
+    --bs-info: #00ACC1;
+    --bs-info-rgb: 0, 172, 193;
+    --bs-warning: #F9A825;
+    --bs-warning-rgb: 249, 168, 37;
+    --bs-danger: #C62828;
+    --bs-danger-rgb: 198, 40, 40;
+    --bs-secondary-color: #607D8B;
+    --bs-link-color: #00897B;
+    --bs-link-color-rgb: 0, 137, 123;
+    --bs-link-hover-color: #00ACC1;
+    --bs-link-hover-color-rgb: 0, 172, 193;
+    --bs-border-color: rgba(96, 125, 139, 0.28);
+}
+
+body {
+    background-color: var(--df-bg);
+    color: var(--df-ink);
+    font-family: 'Plus Jakarta Sans', 'Segoe UI', sans-serif;
+}
+
+h1, h2, h3, h4, h5, h6 { color: var(--df-ink); }
+.text-muted, .small.text-muted { color: var(--df-muted) !important; }
+a { color: var(--df-secondary-2); }
+a:hover { color: var(--df-secondary); }
+
+/* ── Utilidades de marca (reemplazan a *-success usados como acento) ─────── */
+.text-accent { color: var(--df-secondary-2) !important; }
+.text-brand  { color: var(--df-primary) !important; }
+.text-ok     { color: var(--df-success) !important; }
+.bg-ok       { background-color: var(--df-success) !important; color: #fff !important; }
+.bg-brand {
+    background-color: rgba(var(--df-primary-rgb), var(--bs-bg-opacity, 1)) !important;
+    color: #fff;
+}
+.bg-brand.bg-opacity-10 { color: var(--df-primary); }
+.bg-brand-subtle  { background-color: #E3EDF9 !important; color: var(--df-primary) !important; }
+.border-accent        { border-color: var(--df-secondary-2) !important; }
+.border-accent-subtle { border-color: rgba(0, 137, 123, 0.28) !important; }
+
+.btn-brand {
+    --bs-btn-color: #fff; --bs-btn-bg: var(--df-primary); --bs-btn-border-color: var(--df-primary);
+    --bs-btn-hover-color: #fff; --bs-btn-hover-bg: var(--df-primary-2); --bs-btn-hover-border-color: var(--df-primary-2);
+    --bs-btn-active-color: #fff; --bs-btn-active-bg: var(--df-primary-2); --bs-btn-active-border-color: var(--df-primary-2);
+}
+.btn-outline-brand {
+    --bs-btn-color: var(--df-primary-2); --bs-btn-border-color: var(--df-primary-2);
+    --bs-btn-hover-color: #fff; --bs-btn-hover-bg: var(--df-primary-2); --bs-btn-hover-border-color: var(--df-primary-2);
+    --bs-btn-active-color: #fff; --bs-btn-active-bg: var(--df-primary); --bs-btn-active-border-color: var(--df-primary);
+}
+.btn-outline-danger  { --bs-btn-color: #C62828; --bs-btn-border-color: #C62828; --bs-btn-hover-bg: #C62828; --bs-btn-hover-border-color: #C62828; --bs-btn-hover-color: #fff; }
+.btn-outline-warning { --bs-btn-color: #B77A00; --bs-btn-border-color: #F9A825; --bs-btn-hover-bg: #F9A825; --bs-btn-hover-border-color: #F9A825; --bs-btn-hover-color: #1C2B3A; }
+.btn-outline-info    { --bs-btn-color: #00838F; --bs-btn-border-color: #00ACC1; --bs-btn-hover-bg: #00ACC1; --bs-btn-hover-border-color: #00ACC1; --bs-btn-hover-color: #fff; }
+.btn-success { --bs-btn-bg: #2E7D32; --bs-btn-border-color: #2E7D32; --bs-btn-hover-bg: #256628; --bs-btn-hover-border-color: #256628; }
+.btn-primary { --bs-btn-bg: #1565C0; --bs-btn-border-color: #1565C0; --bs-btn-hover-bg: #0B3D91; --bs-btn-hover-border-color: #0B3D91; }
+
+/* Badges de criticidad (tabla "Del síntoma a la causa en red") */
+.badge-critico { background: #C62828; color: #fff; }
+.badge-medio   { background: #F9A825; color: #1C2B3A; }
+.badge-ok      { background: #2E7D32; color: #fff; }
+.badge-proto   { background: rgba(0, 172, 193, .14); color: #00838F; border: 1px solid rgba(0, 172, 193, .45); font-weight: 600; }
+
+/* ── Navbar ──────────────────────────────────────────────────────────────── */
+.logo-text {
+    font-size: 1.4rem;
+    letter-spacing: -0.02em;
+    color: var(--df-primary) !important;
+}
+.logo-text span { color: var(--df-secondary); }
+
+.navbar {
+    backdrop-filter: blur(8px);
+    background-color: var(--df-primary) !important;
+    border-bottom: 3px solid var(--df-secondary) !important;
+}
+.navbar .logo-text, .navbar .logo-text small { color: #fff !important; }
+.navbar .logo-text span { color: #4DD0E1; }
+.navbar .bi-buildings-fill { color: #4DD0E1 !important; }
+.navbar .navbar-toggler { border-color: rgba(255, 255, 255, .5); }
+.navbar .navbar-toggler-icon { filter: invert(1); }
+
+.nav-link {
+    font-weight: 600;
+    font-size: 0.92rem;
+    color: rgba(255, 255, 255, .88) !important;
+}
+.nav-link:hover, .nav-link:focus { color: #4DD0E1 !important; }
+.navbar .btn-brand-cta {
+    background: var(--df-secondary); border-color: var(--df-secondary); color: #fff; font-weight: 600;
+}
+.navbar .btn-brand-cta:hover { background: var(--df-secondary-2); border-color: var(--df-secondary-2); color: #fff; }
+.dropdown-menu { border-top: 3px solid var(--df-secondary) !important; }
+.dropdown-item { color: var(--df-ink-2); }
+.dropdown-item:hover { background: #E3EDF9; color: var(--df-primary); }
+
+/* ── Hero / tarjetas ─────────────────────────────────────────────────────── */
+.hero-section {
+    padding: 3.5rem 0 4rem;
+    background: radial-gradient(circle at 90% 10%, rgba(0, 172, 193, 0.10), transparent 45%),
+                linear-gradient(180deg, #ffffff 0%, var(--df-bg) 100%);
+}
+.hero-row { min-height: 70vh; }
+.hero-title { line-height: 1.12; letter-spacing: -0.03em; }
+
+.dashboard-card {
+    background: linear-gradient(145deg, var(--df-primary) 0%, var(--df-primary-2) 100%);
+    color: #ffffff;
+    padding: 2.4rem;
+    border-radius: 26px;
+    border: 1px solid rgba(0, 172, 193, 0.35);
+    box-shadow: 0 24px 48px rgba(var(--df-primary-rgb), 0.20);
+}
+.dashboard-subtitle { color: #4DD0E1; font-size: 0.78rem; font-weight: 700; letter-spacing: 0.12em; }
+.dashboard-description { color: rgba(255, 255, 255, 0.82); font-size: 0.96rem; }
+
+.kpi-pill {
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    border-radius: 16px;
+    padding: 1rem;
+}
+.progress { height: 9px; border-radius: 20px; background-color: rgba(255, 255, 255, 0.18); }
+.progress-bar { border-radius: 20px; }
+
+.sector-card {
+    background: var(--df-card);
+    border: 1px solid rgba(96, 125, 139, 0.28);
+    border-radius: 20px;
+    transition: transform 0.22s ease, box-shadow 0.22s ease;
+}
+.sector-card:hover { transform: translateY(-4px); box-shadow: 0 14px 30px rgba(var(--df-primary-rgb), 0.10); }
+
+.card { background: var(--df-card); }
+
+.problem-image, .feasibility-image {
+    width: 100%; max-width: 620px; object-fit: cover; border-radius: 24px; transition: transform 0.3s ease;
+}
+.problem-image:hover, .feasibility-image:hover { transform: scale(1.02); }
+
+/* ── Tablas: encabezado primario ─────────────────────────────────────────── */
+.table > thead > tr > th,
+.table > thead.table-light > tr > th,
+.table-light { --bs-table-bg: #0B3D91; --bs-table-color: #fff; }
+.table > thead > tr > th, .table > thead.table-light > tr > th {
+    background-color: #0B3D91 !important; color: #fff !important; border-color: #1565C0 !important;
+}
+.table-hover > tbody > tr:hover > * { --bs-table-hover-bg: #E3EDF9; }
+.table-success { --bs-table-bg: #E3F1E4; --bs-table-color: #1C2B3A; }
+
+/* ── Bloques de Comunicación de Datos (reutilizables) ────────────────────── */
+.net-card {
+    background: #FFFFFF; border: 1px solid #607D8B; border-radius: 16px; padding: 1.5rem; height: 100%;
+}
+.net-card .net-icon {
+    width: 46px; height: 46px; border-radius: 12px; display: inline-flex; align-items: center; justify-content: center;
+    background: rgba(0, 172, 193, .12); color: #00897B; font-size: 1.4rem; flex-shrink: 0;
+}
+.net-card h5 { font-size: 1.02rem; font-weight: 700; color: var(--df-ink); }
+.net-card .net-label { font-size: .72rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: #00897B; }
+.net-card p { font-size: .88rem; color: #263238; margin-bottom: .55rem; }
+.arch-box {
+    background: #FFFFFF; border: 1px solid rgba(96,125,139,.45); border-left: 4px solid #00ACC1;
+    border-radius: 12px; padding: 1.1rem 1.25rem;
+}
+.arch-box .arch-title { font-weight: 700; color: #0B3D91; font-size: .95rem; }
+.arch-box ul { padding-left: 1.1rem; margin: .5rem 0 .6rem; font-size: .86rem; color: #263238; }
+.arch-box li { margin-bottom: .3rem; }

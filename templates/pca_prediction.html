@@ -1,0 +1,1153 @@
+{% extends "base.html" %}
+{% block title %}Autodiagnóstico Empresarial — Chía & Sabana Centro{% endblock %}
+
+{% block content %}
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Syne:wght@700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+<style>
+:root {
+  --bg:      #F5F7FA;
+  --surface: #ffffff;
+  --deep:    #0B3D91;
+  --forest:  #0B3D91;
+  --emerald: #00897B;
+  --mint:    #00ACC1;
+  --amber:   #F9A825;
+  --rose:    #C62828;
+  --slate:   #607D8B;
+  --ink:     #1C2B3A;
+  --border:  rgba(11,61,145,.12);
+  --shadow:  0 4px 24px rgba(11,61,145,.09);
+  --radius:  16px;
+}
+
+body { background: var(--bg); font-family: 'DM Sans', sans-serif; }
+
+.pred-hero {
+  background: linear-gradient(135deg, var(--deep) 0%, #1565C0 55%, #0B3D91 100%);
+  padding: 3.2rem 0 2.5rem;
+}
+.hero-label {
+  font-family: 'DM Mono', monospace;
+  font-size: .72rem; letter-spacing: .14em;
+  color: var(--mint); text-transform: uppercase;
+  border: 1px solid rgba(0,172,193,.3);
+  background: rgba(0,172,193,.08);
+  border-radius: 50px; padding: .3rem .9rem;
+  display: inline-block; margin-bottom: .9rem;
+}
+.pred-hero h1 {
+  font-family: 'Syne', sans-serif;
+  font-size: clamp(1.9rem, 4.2vw, 3rem);
+  font-weight: 800; color: #fff; line-height: 1.12;
+}
+.pred-hero h1 em { color: var(--mint); font-style: normal; }
+.pred-hero p { color: rgba(255,255,255,.8); max-width: 680px; font-weight: 300; }
+
+.pred-grid {
+  display: grid;
+  grid-template-columns: 1fr 1.15fr;
+  gap: 1.5rem;
+  padding: 2rem 0 1rem;
+}
+@media (max-width: 960px) { .pred-grid { grid-template-columns: 1fr; } }
+
+.pred-card {
+  background: var(--surface);
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow);
+  padding: 1.7rem;
+}
+.card-eyebrow {
+  font-family: 'DM Mono', monospace;
+  font-size: .7rem; letter-spacing: .12em;
+  text-transform: uppercase; color: var(--emerald);
+  margin-bottom: .4rem;
+}
+.card-title {
+  font-family: 'Syne', sans-serif;
+  font-size: 1.15rem; font-weight: 700;
+  color: var(--ink); margin-bottom: .9rem;
+}
+
+.mode-switch {
+  display: grid; grid-template-columns: 1fr 1fr; gap: .5rem;
+  background: #ECEFF1; padding: .35rem; border-radius: 12px; margin-bottom: 1.1rem;
+}
+.mode-btn {
+  border: none; border-radius: 9px; padding: .55rem .75rem;
+  font-size: .82rem; font-weight: 600; color: #455A64;
+  background: transparent; cursor: pointer; transition: all .2s;
+}
+.mode-btn.active {
+  background: #fff; color: var(--deep);
+  box-shadow: 0 2px 8px rgba(11,61,145,.12);
+}
+
+.quick-q {
+  background: #F8FAFC; border: 1px solid #CFD8DC; border-radius: 12px;
+  padding: .85rem .95rem; margin-bottom: .75rem;
+}
+.quick-q-title { font-size: .86rem; font-weight: 700; color: var(--ink); margin-bottom: .2rem; }
+.quick-q-help { font-size: .75rem; color: var(--slate); margin-bottom: .5rem; }
+
+.field-group { margin-bottom: 1rem; }
+.field-label {
+  display: flex; justify-content: space-between; align-items: baseline;
+  font-size: .82rem; font-weight: 600; color: var(--ink);
+  margin-bottom: .15rem;
+}
+.field-label span { font-family: 'DM Mono', monospace; font-size: .69rem; color: var(--slate); }
+.field-hint { font-size: .74rem; color: #546E7A; margin-bottom: .35rem; line-height: 1.35; }
+
+.pred-input, .pred-select {
+  width: 100%; background: #F5F7FA; border: 1.5px solid #CFD8DC;
+  border-radius: 10px; padding: .52rem .75rem; font-size: .84rem; color: var(--ink); outline: none;
+}
+.pred-input { font-family: 'DM Mono', monospace; }
+.pred-input:focus, .pred-select:focus {
+  border-color: var(--emerald); box-shadow: 0 0 0 3px rgba(0,137,123,.12); background: #fff;
+}
+
+.range-wrap { display: flex; align-items: center; gap: .7rem; }
+input[type="range"] {
+  flex: 1; -webkit-appearance: none; height: 5px;
+  background: linear-gradient(to right, var(--emerald) 0%, #CFD8DC 0%);
+  border-radius: 50px; outline: none; cursor: pointer;
+}
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none; width: 17px; height: 17px;
+  background: var(--emerald); border-radius: 50%;
+  border: 2px solid #fff; box-shadow: 0 1px 6px rgba(0,137,123,.4);
+}
+
+.pred-btn {
+  width: 100%; margin-top: 1rem; background: var(--forest); color: #fff;
+  border: none; border-radius: 12px; padding: .82rem 1.3rem;
+  font-family: 'Syne', sans-serif; font-size: .95rem; font-weight: 700;
+  cursor: pointer; display: flex; align-items: center; justify-content: center; gap: .5rem;
+  transition: background .2s;
+}
+.pred-btn:hover { background: var(--emerald); }
+
+.cluster-badge {
+  display: flex; align-items: center; gap: 1rem;
+  padding: 1rem 1.2rem; border-radius: 12px; margin-bottom: 1rem;
+}
+.cluster-icon {
+  width: 48px; height: 48px; border-radius: 12px;
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Syne', sans-serif; font-size: 1.25rem; font-weight: 800; color: #fff; flex-shrink: 0;
+}
+.cluster-name { font-family: 'Syne', sans-serif; font-size: 1.05rem; font-weight: 700; color: var(--ink); }
+.cluster-desc { font-size: .81rem; color: var(--slate); margin-top: .2rem; }
+
+.op-warning {
+  background: #FFEBEE; border: 1px solid rgba(198,40,40,.35); border-left: 4px solid #C62828;
+  border-radius: 10px; padding: .75rem .95rem; margin-bottom: 1rem; font-size: .81rem; color: #7F0000;
+}
+
+.prob-row { display: flex; align-items: center; gap: .7rem; margin-bottom: .45rem; }
+.prob-lbl { font-size: .77rem; color: var(--slate); width: 185px; flex-shrink: 0; }
+.prob-track { flex: 1; height: 7px; background: #ECEFF1; border-radius: 50px; overflow: hidden; }
+.prob-fill { height: 100%; border-radius: 50px; transition: width .5s ease; }
+.prob-pct { font-family: 'DM Mono', monospace; font-size: .72rem; color: var(--ink); min-width: 38px; text-align: right; }
+
+.pca-coords { display: grid; grid-template-columns: 1fr 1fr; gap: .7rem; margin-bottom: 1rem; }
+.coord-box { background: #F5F7FA; border-radius: 10px; padding: .65rem .85rem; border: 1px solid #CFD8DC; }
+.coord-box .label { font-size: .7rem; color: var(--slate); }
+.coord-box .value { font-family: 'DM Mono', monospace; font-size: 1rem; font-weight: 600; color: var(--ink); }
+.coord-box .var { font-size: .67rem; color: var(--emerald); }
+
+.prescriptive-grid {
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.3rem; padding-bottom: 1.5rem;
+}
+@media (max-width: 992px) { .prescriptive-grid { grid-template-columns: 1fr; } }
+
+.gap-item { padding: .55rem 0; border-bottom: 1px solid #ECEFF1; }
+.gap-item:last-child { border-bottom: none; }
+.action-box {
+  background: #F5F7FA; border-left: 4px solid var(--emerald);
+  border-radius: 10px; padding: .8rem .95rem; margin-bottom: .7rem;
+}
+.alliance-box {
+  background: #F5F7FA; border: 1px solid rgba(0,137,123,.2);
+  border-radius: 10px; padding: .8rem .95rem; margin-bottom: .7rem;
+}
+
+/* Semáforo visual de conectividad */
+.semaforo-box {
+  display: flex; align-items: center; gap: 1rem; padding: 1rem;
+  border-radius: 12px; border: 1px solid #CFD8DC; margin-bottom: 1rem;
+}
+.semaforo-lights {
+  display: flex; flex-direction: column; gap: 6px; background: #1C2B3A;
+  padding: 8px 7px; border-radius: 999px; flex-shrink: 0;
+}
+.sem-dot { width: 15px; height: 15px; border-radius: 50%; opacity: .22; transition: all .25s; }
+.sem-dot.red { background: #EF5350; }
+.sem-dot.yellow { background: #FFCA28; }
+.sem-dot.green { background: #66BB6A; }
+.sem-dot.active { opacity: 1; transform: scale(1.12); box-shadow: 0 0 10px currentColor; }
+.sem-dot.red.active { color: #EF5350; }
+.sem-dot.yellow.active { color: #FFCA28; }
+.sem-dot.green.active { color: #66BB6A; }
+
+.net-section-label {
+  font-family: 'DM Mono', monospace; font-size: .7rem; letter-spacing: .12em; text-transform: uppercase;
+  color: var(--emerald); margin: 1.2rem 0 .5rem; padding-top: .9rem; border-top: 1px dashed rgba(96,125,139,.45);
+}
+.net-toggle {
+  display: flex; align-items: flex-start; gap: .6rem; background: #F5F7FA; border: 1px solid #CFD8DC;
+  border-radius: 10px; padding: .6rem .8rem; margin-bottom: .5rem; font-size: .82rem; color: var(--ink);
+}
+.net-toggle .form-check-input { margin-top: .2rem; cursor: pointer; }
+.net-toggle .form-check-input:checked { background-color: #2E7D32; border-color: #2E7D32; }
+
+.telemetry {
+  margin-top: 1rem; background: #F5F7FA; border: 1px solid #CFD8DC; border-left: 4px solid #00ACC1;
+  border-radius: 12px; padding: .8rem 1rem;
+}
+.telemetry .t-head { font-family: 'DM Mono', monospace; font-size: .68rem; letter-spacing: .12em; text-transform: uppercase; color: #00897B; margin-bottom: .4rem; }
+.telemetry .t-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: .5rem; }
+.telemetry .t-cell .k { font-size: .66rem; color: #607D8B; }
+.telemetry .t-cell .v { font-family: 'DM Mono', monospace; font-size: .95rem; font-weight: 600; color: #1C2B3A; }
+@media (max-width: 560px) { .telemetry .t-grid { grid-template-columns: repeat(2, 1fr); } }
+
+.net-bar { height: 7px; background: #ECEFF1; border-radius: 50px; overflow: hidden; }
+.net-bar > div { height: 100%; border-radius: 50px; transition: width .45s ease; }
+.finding { font-size: .8rem; padding: .5rem .7rem; border-radius: 8px; margin-bottom: .45rem; border-left: 4px solid; background: #F5F7FA; color: #263238; }
+.finding.critical { border-color: #C62828; } .finding.warning { border-color: #F9A825; } .finding.info { border-color: #00ACC1; }
+
+.email-cta-card {
+  background: linear-gradient(135deg, #FFFFFF 0%, #F0F6FC 100%);
+  border: 1.5px solid rgba(11,61,145,.22); border-radius: 16px;
+  padding: 1.6rem; margin-bottom: 3rem; box-shadow: var(--shadow);
+}
+</style>
+
+<section class="pred-hero">
+  <div class="container">
+    <div class="hero-label">⬡ Autodiagnóstico &amp; Simulador · Chía &amp; Sabana Centro</div>
+    <h1>Diagnóstico Empresarial<br><em>en Lenguaje Claro y Accionable</em></h1>
+    <p class="mt-2">
+      Responde <strong>6 preguntas cotidianas</strong> sobre tu negocio en Chía (o ajusta los controles técnicos),
+      revisa el <strong>semáforo de tu conexión a internet</strong> y recibe tu hoja de ruta con alianzas locales
+      directamente en tu correo.
+    </p>
+  </div>
+</section>
+
+<div class="container">
+  <div class="pred-grid">
+
+    <!-- IZQUIERDA: Cuestionario Intuitivo o Técnico -->
+    <div class="pred-card">
+      <div class="card-eyebrow">Paso 1 — Cuéntanos sobre tu negocio</div>
+      <div class="card-title">Tu Empresa en Chía</div>
+
+      <div class="row g-2 mb-3">
+        <div class="col-md-8">
+          <label class="field-label">Sector económico</label>
+          <select id="sector-select" class="pred-select">
+            {% for s in sectors %}
+            <option value="{{ s }}">{{ s }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="col-md-4">
+          <label class="field-label">Ubicación en Chía</label>
+          <select id="zona-select" class="pred-select">
+            <option value="URBANA">Urbana / Centro</option>
+            <option value="RURAL / VEREDAL">Veredal / Rural</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Selector Modo Rápido vs Modo Detallado -->
+      <div class="mode-switch" role="tablist">
+        <button type="button" class="mode-btn active" id="btn-mode-quick" onclick="setSimulatorMode('quick')">
+          <i class="bi bi-chat-dots me-1"></i> Modo Rápido (6 preguntas)
+        </button>
+        <button type="button" class="mode-btn" id="btn-mode-detail" onclick="setSimulatorMode('detail')">
+          <i class="bi bi-sliders me-1"></i> Modo Detallado (técnico)
+        </button>
+      </div>
+
+      <!-- PANEL MODO RÁPIDO -->
+      <div id="quick-mode-panel">
+        <div class="quick-q">
+          <div class="quick-q-title">1. ¿Cómo es el internet de tu negocio?</div>
+          <div class="quick-q-help">Piensa en si los datáfonos o el computador cargan rápido en horas pico.</div>
+          <select id="q-internet" class="pred-select" onchange="applyQuickAnswers()">
+            <option value="malo">Se cae seguido o es muy lento (cable antiguo / señal débil)</option>
+            <option value="regular" selected>Funciona a veces, pero en horas pico se pone lento</option>
+            <option value="bueno">Es fibra óptica rápida y estable todo el día</option>
+          </select>
+        </div>
+
+        <div class="quick-q">
+          <div class="quick-q-title">2. ¿Qué pasa si se cae tu internet principal?</div>
+          <div class="quick-q-help">Cuando falla el operador del local, ¿puedes seguir cobrando o facturando?</div>
+          <select id="q-failover" class="pred-select" onchange="applyQuickAnswers()">
+            <option value="no" selected>Se frenan los datáfonos y toca cobrar solo en efectivo</option>
+            <option value="si">Tenemos plan B automático (módem con SIM o datos de respaldo)</option>
+          </select>
+        </div>
+
+        <div class="quick-q">
+          <div class="quick-q-title">3. ¿Cómo te encuentran los clientes en internet?</div>
+          <div class="quick-q-help">Visibilidad del negocio en Chía y municipios vecinos.</div>
+          <select id="q-presencia" class="pred-select" onchange="applyQuickAnswers()">
+            <option value="baja">Solo por recomendación voz a voz o aviso en el local</option>
+            <option value="media" selected>Tenemos WhatsApp o redes sociales, pero sin catálogo ni web</option>
+            <option value="alta">Aparecemos en Google Maps con horarios, catálogo y web activa</option>
+          </select>
+        </div>
+
+        <div class="quick-q">
+          <div class="quick-q-title">4. ¿Cómo cobras y recibes pedidos?</div>
+          <div class="quick-q-help">Facilidad para que el cliente pague sin necesidad de traer billetes.</div>
+          <select id="q-pagos" class="pred-select" onchange="applyQuickAnswers()">
+            <option value="efectivo">Casi todo en efectivo</option>
+            <option value="qr" selected>Aceptamos Nequi, Daviplata, código QR o datáfono en el local</option>
+            <option value="web">Cobramos por datáfono, link de pago y pedidos por internet</option>
+          </select>
+        </div>
+
+        <div class="quick-q">
+          <div class="quick-q-title">5. ¿Cómo llevas el inventario y las facturas?</div>
+          <div class="quick-q-help">Control de ventas, mercancía y facturación electrónica.</div>
+          <select id="q-gestion" class="pred-select" onchange="applyQuickAnswers()">
+            <option value="manual" selected>En cuaderno, recibos físicos o archivos sueltos en Excel</option>
+            <option value="basica">Emitimos facturación electrónica básica, pero el inventario es manual</option>
+            <option value="nube">Usamos programa contable y de inventario en la nube (Alegra, Siigo, etc.)</option>
+          </select>
+        </div>
+
+        <div class="quick-q">
+          <div class="quick-q-title">6. ¿Cómo proteges tus cuentas y el Wi-Fi del local?</div>
+          <div class="quick-q-help">Seguridad de claves bancarias y separación entre Wi-Fi de clientes y caja.</div>
+          <select id="q-seguridad" class="pred-select" onchange="applyQuickAnswers()">
+            <option value="baja" selected>Todos usan el mismo Wi-Fi y no tenemos doble clave (2FA)</option>
+            <option value="media">Tenemos buenas contraseñas, pero un solo Wi-Fi para todo</option>
+            <option value="alta">Wi-Fi separado para clientes (VLAN), clave doble (2FA) y copias de seguridad</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- PANEL MODO DETALLADO (Controles técnicos con explicación cotidiana) -->
+      <form id="pred-form" novalidate style="display:none;">
+        {% for f in features %}
+        <div class="field-group">
+          <div class="field-label">
+            {{ stats[f].label }}
+            <span>Prom. regional: {{ stats[f].mean }}</span>
+          </div>
+          <div class="field-hint">{{ stats[f].everyday_hint }}</div>
+          <div class="range-wrap">
+            <input
+              type="range"
+              id="range-{{ loop.index0 }}"
+              min="{{ stats[f].min }}"
+              max="{{ stats[f].max }}"
+              step="0.5"
+              value="{{ stats[f].mean }}"
+              oninput="syncInputs({{ loop.index0 }})"
+            >
+            <input
+              type="number"
+              id="num-{{ loop.index0 }}"
+              class="pred-input"
+              style="max-width:84px;"
+              min="{{ stats[f].min }}"
+              max="{{ stats[f].max }}"
+              step="0.5"
+              value="{{ stats[f].mean }}"
+              oninput="syncRange({{ loop.index0 }})"
+            >
+          </div>
+        </div>
+        {% endfor %}
+
+        <div class="net-section-label">Infraestructura de Red · Supuesto Heurístico Complementario</div>
+        <p class="small text-muted mb-2">
+          Estos parámetros alimentan el <strong>Semáforo de Red</strong> sin alterar las 8 variables del modelo estadístico.
+        </p>
+
+        <div class="field-group">
+          <div class="field-label">Tipo de conexión a internet</div>
+          <div class="field-hint">Medio físico por el que llega el internet a tu negocio.</div>
+          <select id="net-medio" class="pred-select">
+            {% for k, m in medium_options.items() %}
+            <option value="{{ k }}" {% if k == 'RADIOENLACE' %}selected{% endif %}>{{ m.label }} — {{ m.everyday }}</option>
+            {% endfor %}
+          </select>
+        </div>
+
+        <div class="row g-2">
+          <div class="col-4">
+            <div class="field-label">Subida <span>Mbps</span></div>
+            <div class="field-hint">Para enviar facturas.</div>
+            <input type="number" id="net-up" class="pred-input" min="0" max="10000" step="1" value="10">
+          </div>
+          <div class="col-4">
+            <div class="field-label">Bajada <span>Mbps</span></div>
+            <div class="field-hint">Para navegar y cargar.</div>
+            <input type="number" id="net-down" class="pred-input" min="0" max="10000" step="1" value="30">
+          </div>
+          <div class="col-4">
+            <div class="field-label">Latencia <span>ms</span></div>
+            <div class="field-hint">Menor = más rápido.</div>
+            <input type="number" id="net-lat" class="pred-input" min="1" max="5000" step="1" value="60">
+          </div>
+        </div>
+
+        <div class="mt-3">
+          <div class="field-label">Protección y continuidad en el local</div>
+          <label class="net-toggle">
+            <input class="form-check-input" type="checkbox" id="net-vlan">
+            <div>
+              <strong>Wi-Fi separado (VLANs)</strong>
+              <div class="text-muted" style="font-size:.74rem;">Tener una red Wi-Fi para clientes y otra aparte exclusiva para caja y datáfonos.</div>
+            </div>
+          </label>
+          <label class="net-toggle">
+            <input class="form-check-input" type="checkbox" id="net-tls" checked>
+            <div>
+              <strong>Conexión cifrada (HTTPS / TLS 1.3)</strong>
+              <div class="text-muted" style="font-size:.74rem;">Candado de seguridad activo para que nadie intercepte pagos ni claves.</div>
+            </div>
+          </label>
+          <label class="net-toggle">
+            <input class="form-check-input" type="checkbox" id="net-failover">
+            <div>
+              <strong>Plan B si se cae el internet (Failover)</strong>
+              <div class="text-muted" style="font-size:.74rem;">Respaldo automático con internet celular (4G/5G) si falla el operador principal.</div>
+            </div>
+          </label>
+        </div>
+
+        <div class="form-check form-switch mt-2">
+          <input class="form-check-input" type="checkbox" id="live-sim" checked>
+          <label class="form-check-label small text-muted" for="live-sim">
+            Actualizar diagnóstico automáticamente al mover controles
+          </label>
+        </div>
+
+        <button type="submit" class="pred-btn" id="submit-btn">
+          <span>Actualizar Diagnóstico →</span>
+        </button>
+      </form>
+
+      <!-- Perfiles rápidos de ejemplo -->
+      <div class="mt-3 pt-2 border-top">
+        <div class="small text-muted mb-2">Probar ejemplos típicos de Chía:</div>
+        <div class="d-flex gap-2 flex-wrap">
+          <button type="button" class="btn btn-sm btn-outline-danger" onclick="loadPreset('low')">Negocio Tradicional</button>
+          <button type="button" class="btn btn-sm btn-outline-warning" onclick="loadPreset('basic')">Comercio Básico</button>
+          <button type="button" class="btn btn-sm btn-outline-info" onclick="loadPreset('cons')">En Consolidación</button>
+          <button type="button" class="btn btn-sm btn-outline-brand" onclick="loadPreset('high')">Líder Digital</button>
+        </div>
+      </div>
+
+      <!-- Telemetría honesta de sesión -->
+      <div class="telemetry" id="telemetry-box" aria-live="polite">
+        <div class="t-head">Telemetría de Sesión · Latencia Navegador ↔ Servidor (Demostración HTTPS/REST)</div>
+        <div class="t-grid">
+          <div class="t-cell"><div class="k">RTT petición</div><div class="v" id="tel-rtt">— ms</div></div>
+          <div class="t-cell"><div class="k">Cálculo servidor</div><div class="v" id="tel-srv">— ms</div></div>
+          <div class="t-cell"><div class="k">Tránsito red</div><div class="v" id="tel-net">— ms</div></div>
+          <div class="t-cell"><div class="k">Promedio sesión</div><div class="v" id="tel-avg">— ms</div></div>
+        </div>
+        <div class="small mt-2" id="tel-status" style="color:#607D8B;">
+          Mide el tiempo de respuesta entre tu navegador actual y el servidor (no audita la red interna del local).
+        </div>
+      </div>
+    </div>
+
+    <!-- DERECHA: Resultado PCA + Clúster + Semáforo de Red -->
+    <div id="result-panel" class="pred-card">
+      <div class="card-eyebrow">Paso 2 — Resultado de tu Diagnóstico</div>
+      <div class="cluster-badge" id="cluster-badge">
+        <div class="cluster-icon" id="cluster-icon">?</div>
+        <div>
+          <div class="cluster-name" id="cluster-name">—</div>
+          <div class="cluster-desc" id="cluster-desc">—</div>
+        </div>
+      </div>
+
+      <!-- Advertencia si la red en Rojo limita el clúster -->
+      <div class="op-warning" id="op-warning-box" style="display:none;"></div>
+
+      <!-- SEMÁFORO DE RED VISUAL -->
+      <div class="semaforo-box" id="semaforo-box">
+        <div class="semaforo-lights" aria-hidden="true">
+          <span class="sem-dot red" id="light-red"></span>
+          <span class="sem-dot yellow" id="light-yellow"></span>
+          <span class="sem-dot green" id="light-green"></span>
+        </div>
+        <div>
+          <div class="small text-uppercase fw-bold" style="letter-spacing:.08em;color:#00897B;">Estado de Conectividad del Negocio</div>
+          <div class="fw-bold fs-6 text-dark" id="sem-titulo">—</div>
+          <div class="small text-muted mt-1" id="sem-resumen">—</div>
+          <div class="mt-2 d-flex flex-wrap gap-1" id="sem-flags"></div>
+        </div>
+      </div>
+
+      <div class="pca-coords">
+        <div class="coord-box">
+          <div class="label">PC1 · Madurez Tecnológica</div>
+          <div class="value" id="pc1-val">—</div>
+          <div class="var" id="pc1-var">—% varianza</div>
+        </div>
+        <div class="coord-box">
+          <div class="label">PC2 · Capacidad Competitiva</div>
+          <div class="value" id="pc2-val">—</div>
+          <div class="var" id="pc2-var">—% varianza</div>
+        </div>
+      </div>
+
+      <div class="mb-3">
+        <div class="small text-muted mb-2 fw-semibold">Cercanía a cada nivel de madurez empresarial:</div>
+        <div class="prob-row">
+          <div class="prob-lbl">C0 · Tradicional / Rezagada</div>
+          <div class="prob-track"><div class="prob-fill" id="prob-0" style="background:#C62828;"></div></div>
+          <div class="prob-pct" id="prob-pct-0">—</div>
+        </div>
+        <div class="prob-row">
+          <div class="prob-lbl">C1 · Digitalización Básica</div>
+          <div class="prob-track"><div class="prob-fill" id="prob-1" style="background:#F9A825;"></div></div>
+          <div class="prob-pct" id="prob-pct-1">—</div>
+        </div>
+        <div class="prob-row">
+          <div class="prob-lbl">C2 · En Consolidación</div>
+          <div class="prob-track"><div class="prob-fill" id="prob-2" style="background:#00ACC1;"></div></div>
+          <div class="prob-pct" id="prob-pct-2">—</div>
+        </div>
+        <div class="prob-row">
+          <div class="prob-lbl">C3 · Líder Digital Competitiva</div>
+          <div class="prob-track"><div class="prob-fill" id="prob-3" style="background:#2E7D32;"></div></div>
+          <div class="prob-pct" id="prob-pct-3">—</div>
+        </div>
+      </div>
+
+      <div class="small text-muted mb-1 fw-semibold">Tu posición frente a 280 empresas reales de Chía y Sabana Centro</div>
+      <canvas id="pca-canvas" height="210"></canvas>
+    </div>
+
+  </div>
+
+  <!-- BLOQUE PRESCRIPTIVO: 3 TARJETAS -->
+  <div id="prescriptive-section" class="mt-3">
+    <div class="prescriptive-grid">
+      <div class="pred-card">
+        <div class="card-eyebrow">1 · Benchmarking Local en Chía</div>
+        <div class="card-title" id="sector-card-title">Tu Empresa vs. tu Sector</div>
+        <div class="p-3 rounded-3 mb-3" style="background:#F5F7FA;border:1px solid #CFD8DC;">
+          <div class="d-flex justify-content-between small text-muted">
+            <span>Tu madurez digital:</span>
+            <strong class="text-dark" id="user-mat-val">—</strong>
+          </div>
+          <div class="d-flex justify-content-between small text-muted mt-1">
+            <span>Promedio del sector en Chía:</span>
+            <strong class="text-dark" id="sec-mat-val">—</strong>
+          </div>
+          <div class="d-flex justify-content-between small mt-2 pt-2 border-top">
+            <span class="fw-semibold">Brecha frente al sector:</span>
+            <strong id="overall-gap-badge">—</strong>
+          </div>
+        </div>
+        <div id="sector-gaps-list"></div>
+      </div>
+
+      <div class="pred-card">
+        <div class="card-eyebrow">2 · Plan de Acción Priorizado</div>
+        <div class="card-title">Qué Mejorar Primero</div>
+        <p class="small text-muted mb-2">Pasos recomendados donde tu empresa tiene mayor oportunidad de mejora:</p>
+        <div id="priority-actions-list"></div>
+        <div class="mt-3 pt-2 border-top">
+          <div class="small fw-semibold text-accent mb-2">Hoja de ruta por etapas:</div>
+          <ul class="small text-muted ps-3 mb-0" id="cluster-steps-list"></ul>
+        </div>
+      </div>
+
+      <div class="pred-card">
+        <div class="card-eyebrow">3 · Apoyo Gratuito y Cofinanciado</div>
+        <div class="card-title">Alianzas Locales en Chía</div>
+        <p class="small text-muted mb-3">Entidades vigentes en Chía y Sabana Centro para acompañarte:</p>
+        <div id="alliances-list"></div>
+      </div>
+    </div>
+
+    <!-- DETALLE DE RED Y ARQUITECTURA -->
+    <div class="prescriptive-grid" style="grid-template-columns:1fr 1fr; padding-top:0;">
+      <div class="pred-card">
+        <div class="card-eyebrow">4 · Diagnóstico de Conectividad</div>
+        <div class="card-title">Hallazgos y Mejoras de Red</div>
+        <div id="net-findings"></div>
+        <div class="mt-2" id="net-recos"></div>
+        <details class="mt-3 small">
+          <summary class="fw-semibold text-accent" style="cursor:pointer;">
+            Ver desglose técnico y nota metodológica (supuesto de diseño)
+          </summary>
+          <div class="mt-2 p-2 rounded bg-light border">
+            <div class="mb-2" id="net-index-adjust"></div>
+            <div id="net-components"></div>
+            <p class="text-muted mt-2 mb-0" style="font-size:.75rem;">
+              <strong>Nota metodológica:</strong> {{ network_methodology.justificacion }}
+            </p>
+          </div>
+        </details>
+      </div>
+
+      <div class="pred-card">
+        <div class="card-eyebrow">5 · Arquitectura Recomendada</div>
+        <div class="card-title">Soluciones de Comunicación de Datos</div>
+        <div class="small fw-semibold text-brand mb-1" id="arch-perfil">—</div>
+        <div class="small text-muted mb-2" id="arch-resumen"></div>
+        <ul class="small ps-3 mb-2" id="arch-soluciones" style="color:#263238;"></ul>
+        <div class="d-flex flex-wrap gap-1" id="arch-tags"></div>
+      </div>
+    </div>
+
+    <!-- TARJETA DE ENVÍO DE INFORME Y ALERTA POR CORREO -->
+    <div class="email-cta-card">
+      <div class="row g-4 align-items-center">
+        <div class="col-lg-6">
+          <span class="badge bg-brand-subtle text-accent px-3 py-1 rounded-pill mb-2">
+            <i class="bi bi-envelope-check me-1"></i> Comunicación Transaccional · API REST Brevo
+          </span>
+          <h3 class="h4 fw-bold mb-2">Recibe este Diagnóstico Completo en tu Correo</h3>
+          <p class="small text-muted mb-2">
+            Te enviamos un informe ejecutivo con tu perfil sectorial en Chía, el <strong>Semáforo de Red</strong>,
+            la arquitectura recomendada y los contactos de CCB, SENA y MinTIC.
+          </p>
+
+          <!-- Banner dinámico de Alerta de Rezago Crítico -->
+          <div id="critical-alert-banner" class="p-3 rounded-3 mb-2" style="display:none;background:#FFEBEE;border:1px solid rgba(198,40,40,.4);">
+            <div class="fw-bold text-danger small"><i class="bi bi-exclamation-triangle-fill me-1"></i> Alerta de Rezago Crítico Detectada</div>
+            <div class="small text-dark mt-1" id="critical-alert-reason">—</div>
+            <div class="small text-muted mt-1"><strong>Acción prioritaria:</strong> <span id="critical-alert-action">—</span></div>
+          </div>
+
+          <div class="small text-muted">
+            Estado del servicio:
+            {% if email_cfg.configured %}
+              <span class="badge bg-ok">Brevo activo ({{ email_cfg.sender_preview }})</span>
+            {% else %}
+              <span class="badge bg-warning text-dark">Modo vista previa (falta {{ email_cfg.missing_vars | join(', ') }})</span>
+            {% endif %}
+            · <a href="/email_service">Ver arquitectura del servicio de correo</a>
+          </div>
+        </div>
+
+        <div class="col-lg-6">
+          <div class="row g-2">
+            <div class="col-sm-5">
+              <label class="small fw-semibold mb-1">Nombre de tu empresa</label>
+              <input type="text" id="mail-empresa" class="pred-input" placeholder="Ej. Ferretería El Sol Chía">
+            </div>
+            <div class="col-sm-7">
+              <label class="small fw-semibold mb-1">Correo electrónico</label>
+              <input type="email" id="mail-destino" class="pred-input" placeholder="gerencia@tuempresa.com">
+            </div>
+          </div>
+
+          <div class="d-flex flex-wrap gap-2 mt-3">
+            <button type="button" class="btn btn-brand fw-semibold" onclick="dispatchReport('informe')">
+              <i class="bi bi-send me-1"></i> Enviar Informe Completo
+            </button>
+            <button type="button" id="btn-send-alert" class="btn btn-danger fw-semibold" style="display:none;" onclick="dispatchReport('alerta')">
+              <i class="bi bi-bell-fill me-1"></i> Enviar Alerta Crítica
+            </button>
+            <button type="button" class="btn btn-outline-brand" onclick="openEmailPreview('informe')">
+              <i class="bi bi-eye me-1"></i> Vista Previa
+            </button>
+          </div>
+
+          <!-- Telemetría del envío -->
+          <div class="mt-3 p-2 rounded-3 bg-white border small" id="mail-telemetry">
+            <div class="d-flex justify-content-between">
+              <span class="text-muted">Estado de envío:</span>
+              <strong id="mail-state">Listo para enviar</strong>
+            </div>
+            <div class="d-flex justify-content-between mt-1">
+              <span class="text-muted">Telemetría (RTT / Servidor):</span>
+              <span style="font-family:'DM Mono',monospace;" id="mail-rtt">— ms / — ms</span>
+            </div>
+            <div class="mt-1 text-muted" id="mail-feedback" style="font-size:.78rem;"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Vista Previa del Correo -->
+<div class="modal fade" id="emailPreviewModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-lg modal-dialog-scrollable">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title fw-bold">Vista Previa del Correo Generado</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+      </div>
+      <div class="modal-body p-0" style="background:#F5F7FA;">
+        <iframe id="email-preview-frame" style="width:100%;height:540px;border:none;" title="Vista previa correo"></iframe>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script>
+const FEATURES = {{ features | tojson }};
+const STATS    = {{ stats | tojson }};
+const CLUSTER_COLORS = ['#C62828', '#F9A825', '#00ACC1', '#2E7D32'];
+let LAST_DIAGNOSTIC = null;
+let LAST_PAYLOAD = null;
+
+function setSimulatorMode(mode) {
+  const isQuick = mode === 'quick';
+  document.getElementById('quick-mode-panel').style.display = isQuick ? 'block' : 'none';
+  document.getElementById('pred-form').style.display = isQuick ? 'none' : 'block';
+  document.getElementById('btn-mode-quick').classList.toggle('active', isQuick);
+  document.getElementById('btn-mode-detail').classList.toggle('active', !isQuick);
+}
+
+function setFeatureValue(featureKey, val) {
+  const idx = FEATURES.indexOf(featureKey);
+  if (idx === -1) return;
+  const clamped = Math.max(STATS[featureKey].min, Math.min(STATS[featureKey].max, val));
+  document.getElementById(`range-${idx}`).value = clamped.toFixed(1);
+  document.getElementById(`num-${idx}`).value = clamped.toFixed(1);
+  updateRangeGradient(idx, clamped);
+}
+
+function applyQuickAnswers() {
+  const qNet  = document.getElementById('q-internet').value;
+  const qFail = document.getElementById('q-failover').value;
+  const qPres = document.getElementById('q-presencia').value;
+  const qPago = document.getElementById('q-pagos').value;
+  const qGest = document.getElementById('q-gestion').value;
+  const qSeg  = document.getElementById('q-seguridad').value;
+
+  const netMap = {
+    malo:    { medio: 'COBRE_ADSL',  up: 3,  down: 12,  lat: 140, score: 24 },
+    regular: { medio: 'RADIOENLACE', up: 12, down: 40,  lat: 65,  score: 52 },
+    bueno:   { medio: 'FTTH',        up: 80, down: 200, lat: 18,  score: 86 },
+  }[qNet];
+
+  const presScore = { baja: 20, media: 48, alta: 84 }[qPres];
+  const pagoScore = { efectivo: 18, qr: 50, web: 85 }[qPago];
+  const gestScore = { manual: 22, basica: 52, nube: 84 }[qGest];
+  const segScore  = { baja: 20, media: 48, alta: 85 }[qSeg];
+  const capScore  = Math.round((presScore + gestScore + segScore) / 3);
+  const madurez   = Math.round((netMap.score + presScore + pagoScore + gestScore + segScore + capScore) / 6);
+  const comp      = Math.round(madurez * 0.92 + (qFail === 'si' ? 6 : 0));
+
+  setFeatureValue('puntaje_conectividad', netMap.score);
+  setFeatureValue('puntaje_presencia_digital', presScore);
+  setFeatureValue('puntaje_comercio_electronico', pagoScore);
+  setFeatureValue('puntaje_gestion_interna_tic', gestScore);
+  setFeatureValue('puntaje_ciberseguridad', segScore);
+  setFeatureValue('puntaje_capacitacion_digital', capScore);
+  setFeatureValue('indice_madurez_digital', madurez);
+  setFeatureValue('indice_competitividad', comp);
+
+  document.getElementById('net-medio').value = netMap.medio;
+  document.getElementById('net-up').value = netMap.up;
+  document.getElementById('net-down').value = netMap.down;
+  document.getElementById('net-lat').value = netMap.lat;
+  document.getElementById('net-failover').checked = (qFail === 'si');
+  document.getElementById('net-vlan').checked = (qSeg === 'alta');
+  document.getElementById('net-tls').checked = (qSeg !== 'baja');
+
+  runPrediction(false);
+}
+
+const PRESETS = {
+  low:   FEATURES.map(f => STATS[f].min + (STATS[f].max - STATS[f].min) * 0.14),
+  basic: FEATURES.map(f => STATS[f].min + (STATS[f].max - STATS[f].min) * 0.36),
+  cons:  FEATURES.map(f => STATS[f].min + (STATS[f].max - STATS[f].min) * 0.62),
+  high:  FEATURES.map(f => STATS[f].min + (STATS[f].max - STATS[f].min) * 0.88),
+};
+
+const NET_PRESETS = {
+  low:   { medio: 'COBRE_ADSL',  up: 2,   down: 10,  lat: 150, vlan: false, tls: false, failover: false },
+  basic: { medio: 'MOVIL_FWA',   up: 5,   down: 20,  lat: 100, vlan: false, tls: true,  failover: false },
+  cons:  { medio: 'FTTH',        up: 20,  down: 100, lat: 40,  vlan: true,  tls: true,  failover: false },
+  high:  { medio: 'FTTH',        up: 100, down: 300, lat: 15,  vlan: true,  tls: true,  failover: true  },
+};
+
+function applyNetPreset(key) {
+  const n = NET_PRESETS[key];
+  document.getElementById('net-medio').value = n.medio;
+  document.getElementById('net-up').value = n.up;
+  document.getElementById('net-down').value = n.down;
+  document.getElementById('net-lat').value = n.lat;
+  document.getElementById('net-vlan').checked = n.vlan;
+  document.getElementById('net-tls').checked = n.tls;
+  document.getElementById('net-failover').checked = n.failover;
+}
+
+let simTimer = null;
+function triggerLiveSim() {
+  if (!document.getElementById('live-sim').checked) return;
+  clearTimeout(simTimer);
+  simTimer = setTimeout(() => runPrediction(false), 180);
+}
+
+function syncInputs(idx) {
+  const v = document.getElementById(`range-${idx}`).value;
+  document.getElementById(`num-${idx}`).value = parseFloat(v).toFixed(1);
+  updateRangeGradient(idx, v);
+  triggerLiveSim();
+}
+function syncRange(idx) {
+  const v = document.getElementById(`num-${idx}`).value;
+  const r = document.getElementById(`range-${idx}`);
+  r.value = v;
+  updateRangeGradient(idx, v);
+  triggerLiveSim();
+}
+function updateRangeGradient(idx, v) {
+  const r = document.getElementById(`range-${idx}`);
+  const min = parseFloat(r.min), max = parseFloat(r.max);
+  const pct = ((v - min) / (max - min) * 100).toFixed(1);
+  r.style.background = `linear-gradient(to right, #00897B ${pct}%, #CFD8DC ${pct}%)`;
+}
+function loadPreset(key) {
+  PRESETS[key].forEach((val, i) => {
+    document.getElementById(`range-${i}`).value = val.toFixed(1);
+    document.getElementById(`num-${i}`).value   = val.toFixed(1);
+    updateRangeGradient(i, val);
+  });
+  applyNetPreset(key);
+  runPrediction(false);
+}
+
+FEATURES.forEach((_, i) => updateRangeGradient(i, document.getElementById(`range-${i}`).value));
+document.getElementById('sector-select').addEventListener('change', () => runPrediction(false));
+document.getElementById('zona-select').addEventListener('change', () => runPrediction(false));
+['net-medio','net-up','net-down','net-lat','net-vlan','net-tls','net-failover'].forEach(id => {
+  const el = document.getElementById(id);
+  el.addEventListener(el.type === 'checkbox' || el.tagName === 'SELECT' ? 'change' : 'input', triggerLiveSim);
+});
+
+let scatterChart = null;
+function buildScatterChart(pc1, pc2, refPoints) {
+  const ctx = document.getElementById('pca-canvas').getContext('2d');
+  if (scatterChart) scatterChart.destroy();
+  const pts = refPoints || [];
+
+  scatterChart = new Chart(ctx, {
+    type: 'scatter',
+    data: {
+      datasets: [
+        {
+          label: 'Empresas Sabana Centro',
+          data: pts.map(p => ({ x: p.x, y: p.y })),
+          backgroundColor: pts.map(p => (CLUSTER_COLORS[p.cluster] || '#607D8B') + '55'),
+          pointRadius: 3.5,
+        },
+        {
+          label: 'Tu Empresa',
+          data: [{ x: pc1, y: pc2 }],
+          backgroundColor: '#1C2B3A',
+          borderColor: '#00ACC1',
+          borderWidth: 3,
+          pointRadius: 9,
+        }
+      ]
+    },
+    options: {
+      animation: { duration: 220 },
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          callbacks: {
+            label: ctx => {
+              if (ctx.datasetIndex === 1) return [`Tu Empresa`, `PC1: ${pc1} | PC2: ${pc2}`];
+              const p = pts[ctx.dataIndex];
+              return p ? `${p.empresa} (${p.municipio} · ${p.sector})` : '';
+            }
+          }
+        }
+      },
+      scales: {
+        x: { title: { display: true, text: 'PC1 (Madurez Tecnológica)', font: { size: 10 } } },
+        y: { title: { display: true, text: 'PC2 (Capacidad Competitiva)', font: { size: 10 } } },
+      }
+    }
+  });
+}
+
+const RTT_LOG = [];
+function rttColor(ms) { return ms < 300 ? '#2E7D32' : (ms < 800 ? '#F9A825' : '#C62828'); }
+function renderTelemetry(rtt, serverMs, ok = true, status = 200) {
+  const el = (id) => document.getElementById(id);
+  if (!ok) {
+    el('tel-rtt').textContent = rtt.toFixed(1) + ' ms';
+    el('tel-rtt').style.color = '#C62828';
+    el('tel-status').innerHTML = `<span class="badge" style="background:#C62828;color:#fff;">Error HTTP ${status}</span> No se pudo completar la petición.`;
+    return;
+  }
+  RTT_LOG.push(rtt);
+  const avg = RTT_LOG.reduce((a, b) => a + b, 0) / RTT_LOG.length;
+  el('tel-rtt').textContent = rtt.toFixed(1) + ' ms';
+  el('tel-rtt').style.color = rttColor(rtt);
+  el('tel-srv').textContent = serverMs != null ? serverMs.toFixed(1) + ' ms' : 'n/d';
+  el('tel-net').textContent = serverMs != null ? Math.max(0, rtt - serverMs).toFixed(1) + ' ms' : 'n/d';
+  el('tel-avg').textContent = avg.toFixed(1) + ' ms';
+  el('tel-status').innerHTML = `<span class="badge" style="background:#2E7D32;color:#fff;">HTTP ${status}</span> RTT sesión navegador ↔ servidor (no audita la LAN interna).`;
+}
+
+async function runPrediction(shouldScroll = true) {
+  const payload = {
+    sector: document.getElementById('sector-select').value,
+    zona: document.getElementById('zona-select').value,
+    red_medio: document.getElementById('net-medio').value,
+    red_upload_mbps: parseFloat(document.getElementById('net-up').value) || 0,
+    red_download_mbps: parseFloat(document.getElementById('net-down').value) || 0,
+    red_latencia_ms: parseFloat(document.getElementById('net-lat').value) || 0,
+    red_vlan: document.getElementById('net-vlan').checked,
+    red_cifrado: document.getElementById('net-tls').checked,
+    red_failover: document.getElementById('net-failover').checked,
+  };
+  for (let i = 0; i < FEATURES.length; i++) {
+    const v = parseFloat(document.getElementById(`num-${i}`).value);
+    if (isNaN(v)) return;
+    payload[FEATURES[i]] = v;
+  }
+  LAST_PAYLOAD = payload;
+
+  const t0 = performance.now();
+  let res;
+  try {
+    res = await fetch('/pca-predict', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+    });
+  } catch (err) {
+    renderTelemetry(performance.now() - t0, null, false, 'sin red');
+    return;
+  }
+  const d = await res.json().catch(() => ({}));
+  const rtt = performance.now() - t0;
+  if (!res.ok) { renderTelemetry(rtt, null, false, res.status); return; }
+  LAST_DIAGNOSTIC = d;
+  renderTelemetry(rtt, d.server_ms, true, res.status);
+  renderResult(d, shouldScroll);
+}
+
+document.getElementById('pred-form').addEventListener('submit', e => {
+  e.preventDefault();
+  runPrediction(true);
+});
+
+function renderResult(d, shouldScroll) {
+  const col = CLUSTER_COLORS[d.cluster];
+  const badge = document.getElementById('cluster-badge');
+  badge.style.background = col + '14';
+  badge.style.borderLeft = `4px solid ${col}`;
+  document.getElementById('cluster-icon').style.background = col;
+  document.getElementById('cluster-icon').textContent = 'C' + d.cluster;
+  document.getElementById('cluster-name').textContent = d.label;
+  document.getElementById('cluster-desc').textContent = d.description;
+
+  const opBox = document.getElementById('op-warning-box');
+  if (d.operational_warning) {
+    opBox.style.display = 'block';
+    opBox.innerHTML = `<i class="bi bi-exclamation-octagon-fill me-1"></i> <strong>Cuello de botella de red:</strong> ${d.operational_warning}`;
+  } else {
+    opBox.style.display = 'none';
+  }
+
+  document.getElementById('pc1-val').textContent = d.pc1;
+  document.getElementById('pc2-val').textContent = d.pc2;
+  document.getElementById('pc1-var').textContent = d.pc1_variance + '% varianza';
+  document.getElementById('pc2-var').textContent = d.pc2_variance + '% varianza';
+
+  d.cluster_probs.forEach((p, i) => {
+    const w = Math.round(p * 100);
+    document.getElementById(`prob-${i}`).style.width     = w + '%';
+    document.getElementById(`prob-pct-${i}`).textContent = w + '%';
+  });
+
+  buildScatterChart(d.pc1, d.pc2, d.reference_points);
+
+  const si = d.sector_info;
+  document.getElementById('sector-card-title').textContent = `Vs. ${si.sector} (Chía)`;
+  document.getElementById('user-mat-val').textContent = `${si.user_maturity} / 100`;
+  document.getElementById('sec-mat-val').textContent  = `${si.sector_maturity_avg} / 100 (n=${si.n_chia})`;
+  const gapEl = document.getElementById('overall-gap-badge');
+  gapEl.textContent = (si.overall_gap >= 0 ? '+' : '') + si.overall_gap + ' pts';
+  gapEl.className   = si.overall_gap >= 0 ? 'text-ok fw-bold' : 'text-danger fw-bold';
+
+  document.getElementById('sector-gaps-list').innerHTML = si.comparison.slice(0, 6).map(item => {
+    const pos = item.gap >= 0;
+    return `
+      <div class="gap-item">
+        <div class="d-flex justify-content-between small">
+          <span class="fw-medium">${item.label.split(' (')[0]}</span>
+          <span class="${pos ? 'text-ok' : 'text-danger'} fw-semibold">
+            ${item.user_value} vs ${item.sector_avg} (${pos ? '+' : ''}${item.gap})
+          </span>
+        </div>
+      </div>`;
+  }).join('');
+
+  document.getElementById('priority-actions-list').innerHTML = d.prescriptive_plan.priority_actions.map(a => `
+    <div class="action-box">
+      <div class="d-flex justify-content-between align-items-center mb-1">
+        <strong class="small text-dark">${a.titulo}</strong>
+        <span class="badge ${a.gap < 0 ? 'bg-danger' : 'bg-ok'}">${a.gap >= 0 ? '+' : ''}${a.gap} pts</span>
+      </div>
+      <div class="small text-muted">${a.accion}</div>
+      <div class="small text-ok mt-1"><strong>Impacto:</strong> ${a.impacto}</div>
+    </div>
+  `).join('');
+
+  document.getElementById('cluster-steps-list').innerHTML =
+    d.prescriptive_plan.cluster_steps.map(s => `<li class="mb-1">${s}</li>`).join('');
+
+  document.getElementById('alliances-list').innerHTML = d.local_alliances.map(al => `
+    <div class="alliance-box">
+      <div class="fw-bold small text-accent">${al.entidad}</div>
+      <div class="fw-semibold small text-dark">${al.programa}</div>
+      <div class="small text-muted mt-1">${al.beneficio}</div>
+      <span class="badge bg-white text-accent border mt-2">${al.aplica_a}</span>
+    </div>
+  `).join('');
+
+  renderNetwork(d);
+
+  // Alerta de rezago crítico (Clúster 0 o Semáforo Rojo < 40)
+  const ca = d.critical_alert || {};
+  const banner = document.getElementById('critical-alert-banner');
+  const btnAlert = document.getElementById('btn-send-alert');
+  if (ca.eligible) {
+    banner.style.display = 'block';
+    btnAlert.style.display = 'inline-block';
+    document.getElementById('critical-alert-reason').textContent = ca.reason;
+    document.getElementById('critical-alert-action').textContent = ca.priority_action;
+  } else {
+    banner.style.display = 'none';
+    btnAlert.style.display = 'none';
+  }
+
+  if (shouldScroll) document.getElementById('result-panel').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+function renderNetwork(d) {
+  const a = d.network_architecture;
+  document.getElementById('arch-perfil').textContent = a.perfil;
+  document.getElementById('arch-resumen').textContent = a.resumen;
+  document.getElementById('arch-soluciones').innerHTML = a.soluciones.map(x => `<li class="mb-1">${x}</li>`).join('');
+  document.getElementById('arch-tags').innerHTML = a.tecnologias.map(t => `<span class="badge badge-proto">${t}</span>`).join('');
+
+  const n = d.network;
+  if (!n) return;
+
+  // Actualizar Semáforo Visual
+  ['red', 'yellow', 'green'].forEach(c => document.getElementById(`light-${c}`).classList.remove('active'));
+  const lightId = n.semaforo === 'verde' ? 'light-green' : (n.semaforo === 'amarillo' ? 'light-yellow' : 'light-red');
+  document.getElementById(lightId).classList.add('active');
+
+  const semBox = document.getElementById('semaforo-box');
+  semBox.style.background = n.semaforo === 'verde' ? '#E8F5E9' : (n.semaforo === 'amarillo' ? '#FFF8E1' : '#FFEBEE');
+  document.getElementById('sem-titulo').textContent = n.semaforo_titulo;
+  document.getElementById('sem-resumen').textContent = n.semaforo_resumen;
+  document.getElementById('sem-flags').innerHTML = (n.short_flags || []).map(fl =>
+    `<span class="badge bg-white text-dark border">${fl}</span>`).join('');
+
+  const sign = n.adjustment >= 0 ? '+' : '';
+  document.getElementById('net-index-adjust').innerHTML =
+    `Índice heurístico de red: <strong>${n.index}/100</strong> · Ajuste acotado sobre madurez: ${n.base_maturity} ${sign}${n.adjustment} = <strong>${n.adjusted_maturity}</strong>`;
+
+  document.getElementById('net-components').innerHTML = n.components.map(c => {
+    const cc = c.score >= 70 ? '#2E7D32' : (c.score >= 40 ? '#F9A825' : '#C62828');
+    return `<div class="prob-row"><div class="prob-lbl" style="width:205px;">${c.label} (${c.weight_pct}%)</div>
+      <div class="net-bar flex-fill"><div style="width:${Math.round(c.score)}%;background:${cc};"></div></div>
+      <div class="prob-pct">${Math.round(c.score)}</div></div>`;
+  }).join('');
+
+  document.getElementById('net-findings').innerHTML = n.findings.map(f =>
+    `<div class="finding ${f.severity}">${f.text}</div>`).join('');
+  document.getElementById('net-recos').innerHTML = n.recommendations.map(r => `
+    <div class="action-box">
+      <strong class="small text-dark">${r.titulo}</strong>
+      <div class="small text-muted">${r.accion}</div>
+      <div class="small text-ok mt-1"><strong>Impacto:</strong> ${r.impacto}</div>
+    </div>`).join('');
+}
+
+async function openEmailPreview(tipo = 'informe') {
+  const nombre = document.getElementById('mail-empresa').value || 'Tu Empresa en Chía';
+  const res = await fetch('/preview-correo', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ nombre, tipo, diagnostico: LAST_DIAGNOSTIC, inputs: LAST_PAYLOAD }),
+  });
+  const data = await res.json();
+  if (data.html) {
+    document.getElementById('email-preview-frame').srcdoc = data.html;
+    new bootstrap.Modal(document.getElementById('emailPreviewModal')).show();
+  }
+}
+
+async function dispatchReport(tipo) {
+  const email = document.getElementById('mail-destino').value.trim();
+  const nombre = document.getElementById('mail-empresa').value.trim() || 'Tu Empresa en Chía';
+  const endpoint = tipo === 'alerta' ? '/enviar-alerta' : '/enviar-informe';
+
+  const stateEl = document.getElementById('mail-state');
+  const rttEl = document.getElementById('mail-rtt');
+  const fbEl = document.getElementById('mail-feedback');
+
+  stateEl.innerHTML = '<span class="badge bg-info text-dark">Enviando...</span>';
+  fbEl.textContent = '';
+
+  const t0 = performance.now();
+  let res;
+  try {
+    res = await fetch(endpoint, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        email,
+        nombre,
+        diagnostico: LAST_DIAGNOSTIC,
+        inputs: LAST_PAYLOAD,
+      }),
+    });
+  } catch (err) {
+    const rtt = performance.now() - t0;
+    stateEl.innerHTML = '<span class="badge bg-danger">Error de red</span>';
+    rttEl.textContent = `${rtt.toFixed(1)} ms / —`;
+    fbEl.textContent = 'No se pudo conectar con el servidor.';
+    return;
+  }
+
+  const data = await res.json().catch(() => ({}));
+  const rtt = performance.now() - t0;
+  rttEl.textContent = `${rtt.toFixed(1)} ms / ${data.server_ms != null ? data.server_ms + ' ms' : '—'}`;
+
+  if (res.status === 202) {
+    stateEl.innerHTML = '<span class="badge bg-ok">En cola · HTTP 202 Accepted</span>';
+    fbEl.innerHTML = `${data.mensaje} (Cupo restante en sesión/IP: ${data.remaining ?? '—'}).`;
+  } else if (res.status === 503 && data.preview_html) {
+    stateEl.innerHTML = '<span class="badge bg-warning text-dark">Sin API Key · HTTP 503</span>';
+    fbEl.innerHTML = `${data.mensaje} <a href="#" onclick="openEmailPreview('${tipo}');return false;">Abrir vista previa ahora</a>.`;
+  } else {
+    stateEl.innerHTML = `<span class="badge bg-danger">Error · HTTP ${res.status}</span>`;
+    fbEl.textContent = data.error || data.mensaje || 'No fue posible procesar el envío.';
+  }
+}
+
+document.addEventListener('DOMContentLoaded', () => applyQuickAnswers());
+</script>
+{% endblock %}

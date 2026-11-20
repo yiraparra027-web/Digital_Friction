@@ -1,0 +1,224 @@
+{% extends 'base.html' %}
+
+{% block title %}Precisión de perfiles — Precisión del diagnóstico{% endblock %}
+
+{% block content %}
+
+<!-- ENCABEZADO -->
+<section class="py-5" style="background:linear-gradient(135deg,#1C2B3A 0%,#0B3D91 65%,#0B3D91 100%);color:#fff;">
+  <div class="container">
+    <div class="row align-items-center">
+      <div class="col-lg-8">
+        <span class="badge bg-brand px-3 py-2 mb-3 fs-6">Precisión del diagnóstico · Precisión de perfiles</span>
+        <h1 class="display-4 fw-bold mb-3">
+          Precisión de perfiles <span style="color:#00ACC1;">K-Means (K = {{ results.k_final }})</span>
+        </h1>
+        <p class="lead opacity-75">
+          Validación interna y sectorial de los cuatro perfiles de madurez digital obtenidos para las empresas de
+          <strong>Chía y Sabana Centro (Vigencia 2026)</strong>, comparando el desempeño entre entrenamiento y validación.
+        </p>
+      </div>
+      <div class="col-lg-4 mt-4 mt-lg-0">
+        <div class="row g-3">
+          <div class="col-6">
+            <div class="rounded-4 p-3 text-center" style="background:rgba(255,255,255,.08);">
+              <div class="fs-2 fw-bold text-accent">{{ "%.4f"|format(results.metrics.val_silhouette) }}</div>
+              <div class="small opacity-75">Silueta Validación</div>
+            </div>
+          </div>
+          <div class="col-6">
+            <div class="rounded-4 p-3 text-center" style="background:rgba(255,255,255,.08);">
+              <div class="fs-2 fw-bold text-info">{{ "%.4f"|format(results.metrics.val_db) }}</div>
+              <div class="small opacity-75">Davies-Bouldin Val.</div>
+            </div>
+          </div>
+          <div class="col-6">
+            <div class="rounded-4 p-3 text-center" style="background:rgba(255,255,255,.08);">
+              <div class="fs-2 fw-bold text-warning">{{ "%.1f"|format(results.metrics.inertia) }}</div>
+              <div class="small opacity-75">Inercia Total</div>
+            </div>
+          </div>
+          <div class="col-6">
+            <div class="rounded-4 p-3 text-center" style="background:rgba(255,255,255,.08);">
+              <div class="fs-2 fw-bold text-accent">{{ results.metrics.n_iter }}</div>
+              <div class="small opacity-75">Iteraciones</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="container py-5">
+
+<!-- SECCIÓN 1 · MÉTRICAS INTERNAS Y COMPARATIVA DE K -->
+<section class="mb-5">
+  <div class="d-flex align-items-center gap-3 mb-4">
+    <div class="rounded-circle d-flex align-items-center justify-content-center fw-bold text-white"
+         style="width:40px;height:40px;background:#0B3D91;">1</div>
+    <h2 class="fw-bold mb-0">Métricas de Validación Interna y Comparación por Número de Clústeres</h2>
+  </div>
+
+  <div class="row g-4 mb-4">
+    <div class="col-lg-4">
+      <div class="card border-0 shadow-sm p-4 h-100">
+        <h5 class="fw-bold mb-2 text-accent"><i class="bi bi-check2-circle me-2"></i>Coeficiente de Silueta</h5>
+        <p class="text-muted small">Mide la cohesión interna frente a la separación con otros clústeres (rango -1 a 1; mayor es mejor).</p>
+        <div class="d-flex justify-content-between border-top pt-2 mt-auto">
+          <span class="small text-muted">Entrenamiento: <strong>{{ "%.4f"|format(results.metrics.train_silhouette) }}</strong></span>
+          <span class="small text-accent">Validación: <strong>{{ "%.4f"|format(results.metrics.val_silhouette) }}</strong></span>
+        </div>
+      </div>
+    </div>
+    <div class="col-lg-4">
+      <div class="card border-0 shadow-sm p-4 h-100">
+        <h5 class="fw-bold mb-2 text-info"><i class="bi bi-diagram-3 me-2"></i>Índice Davies-Bouldin</h5>
+        <p class="text-muted small">Evalúa la dispersión intra-clúster frente a la distancia entre centroides (menor valor indica mejor separación).</p>
+        <div class="d-flex justify-content-between border-top pt-2 mt-auto">
+          <span class="small text-muted">Entrenamiento: <strong>{{ "%.4f"|format(results.metrics.train_db) }}</strong></span>
+          <span class="small text-info">Validación: <strong>{{ "%.4f"|format(results.metrics.val_db) }}</strong></span>
+        </div>
+      </div>
+    </div>
+    <div class="col-lg-4">
+      <div class="card border-0 shadow-sm p-4 h-100">
+        <h5 class="fw-bold mb-2 text-warning"><i class="bi bi-bullseye me-2"></i>Compacidad (Inercia WCSS)</h5>
+        <p class="text-muted small">Suma de distancias cuadráticas de cada empresa respecto a su centroide asignado.</p>
+        <div class="d-flex justify-content-between border-top pt-2 mt-auto">
+          <span class="small text-muted">Inercia final: <strong>{{ "%.2f"|format(results.metrics.inertia) }}</strong></span>
+          <span class="small text-warning">Clústeres: <strong>K = {{ results.k_final }}</strong></span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card border-0 shadow-sm p-4">
+    <h5 class="fw-bold mb-3"><i class="bi bi-table me-2 text-accent"></i>Evaluación Comparativa de Candidatos (K = 2 a 6)</h5>
+    <div class="table-responsive">
+      <table class="table table-hover align-middle mb-0">
+        <thead class="table-light">
+          <tr>
+            <th>Número de Clústeres (K)</th>
+            <th class="text-end">Inercia (WCSS) ↓</th>
+            <th class="text-end">Silueta Validación ↑</th>
+            <th class="text-end">Davies-Bouldin ↓</th>
+            <th class="text-center">Selección</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for row in results.comparison %}
+          <tr class="{{ 'table-success fw-semibold' if row.selected else '' }}">
+            <td>K = {{ row.k }}</td>
+            <td class="text-end">{{ row.inertia }}</td>
+            <td class="text-end">{{ "%.4f"|format(row.silhouette) }}</td>
+            <td class="text-end">{{ "%.4f"|format(row.db) }}</td>
+            <td class="text-center">
+              {% if row.selected %}
+              <span class="badge bg-brand">Modelo Seleccionado</span>
+              {% else %}
+              <span class="badge bg-secondary">Evaluado</span>
+              {% endif %}
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- SECCIÓN 2 · DIAGNÓSTICO VISUAL DE LOS PERFILES -->
+<section class="mb-5">
+  <div class="d-flex align-items-center gap-3 mb-4">
+    <div class="rounded-circle d-flex align-items-center justify-content-center fw-bold text-white"
+         style="width:40px;height:40px;background:#0B3D91;">2</div>
+    <h2 class="fw-bold mb-0">Diagnóstico Visual de los Perfiles de Madurez Digital</h2>
+  </div>
+
+  <div class="row g-4 mb-4">
+    <div class="col-lg-6">
+      <div class="card border-0 shadow-sm p-4 h-100">
+        <h5 class="fw-bold mb-2">Mapa de Calor por Pilar TIC</h5>
+        <p class="text-muted small">Puntaje promedio (0 a 100) alcanzado por cada segmento en los seis pilares digitales.</p>
+        <img src="{{ url_for('static', filename='img/kmeans/heatmap.png') }}"
+             alt="Mapa de calor de madurez digital por clúster"
+             class="img-fluid rounded-3 border mt-auto">
+      </div>
+    </div>
+    <div class="col-lg-6">
+      <div class="card border-0 shadow-sm p-4 h-100">
+        <h5 class="fw-bold mb-2">Distribución Poblacional de los Clústeres</h5>
+        <p class="text-muted small">Proporción de empresas ubicadas en cada nivel de madurez tecnológica en Sabana Centro.</p>
+        <img src="{{ url_for('static', filename='img/kmeans/cluster_sizes.png') }}"
+             alt="Distribución porcentual de empresas por clúster"
+             class="img-fluid rounded-3 border mt-auto">
+      </div>
+    </div>
+  </div>
+
+  <div class="card border-0 shadow-sm p-4">
+    <h5 class="fw-bold mb-3"><i class="bi bi-building me-2 text-accent"></i>Resumen por Segmento Empresarial (Chía y Sabana Centro)</h5>
+    <div class="table-responsive">
+      <table class="table table-hover align-middle mb-0">
+        <thead class="table-light">
+          <tr>
+            <th>Clúster</th>
+            <th>Perfil Empresarial</th>
+            <th class="text-center">Total Empresas</th>
+            <th class="text-center">Empresas en Chía</th>
+            <th class="text-center">Participación</th>
+            <th class="text-end">Madurez Digital</th>
+            <th class="text-end">Competitividad</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for c in results.cluster_summary %}
+          <tr>
+            <td><span class="badge bg-dark">C{{ c.cluster }}</span></td>
+            <td class="fw-semibold">{{ c.label }}</td>
+            <td class="text-center">{{ c.count }}</td>
+            <td class="text-center fw-bold text-accent">{{ c.chia_count }}</td>
+            <td class="text-center">{{ c.pct }}%</td>
+            <td class="text-end">{{ c.avg_madurez }}</td>
+            <td class="text-end">{{ c.avg_competitividad }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- SECCIÓN 3 · CASOS EVALUADOS EN CHÍA -->
+<section class="mb-5">
+  <div class="d-flex align-items-center gap-3 mb-4">
+    <div class="rounded-circle d-flex align-items-center justify-content-center fw-bold text-white"
+         style="width:40px;height:40px;background:#0B3D91;">3</div>
+    <h2 class="fw-bold mb-0">Muestra de Empresas Clasificadas en Chía</h2>
+  </div>
+
+  <div class="row g-3">
+    {% for p in results.predictions %}
+    <div class="col-md-6">
+      <div class="card border-0 shadow-sm p-3 h-100">
+        <div class="d-flex justify-content-between align-items-start mb-1">
+          <div class="fw-bold">{{ p.entity }}</div>
+          <span class="badge bg-brand">C{{ p.cluster }} · {{ p.label }}</span>
+        </div>
+        <div class="small text-muted mb-2">{{ p.dept }} · Sector: {{ p.orden }}</div>
+        <div class="d-flex gap-2 flex-wrap">
+          <span class="badge bg-light text-dark border">Madurez Digital: {{ p.pol06 }}</span>
+          <span class="badge bg-light text-dark border">Competitividad: {{ p.i82 }}</span>
+          <span class="badge bg-light text-dark border">Comercio Electrónico: {{ p.i18 }}</span>
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+</section>
+
+</div>
+{% endblock %}
+
+

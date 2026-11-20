@@ -1,0 +1,113 @@
+{% extends 'base.html' %}
+
+{% block title %}Comprensión del Negocio — Chía & Sabana Centro{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+
+    <div class="mb-5">
+        <span class="badge bg-brand-subtle text-accent px-3 py-2 rounded-pill">Fase 1 · CRISP-ML(Q)</span>
+        <h1 class="display-4 fw-bold mt-3">Comprensión del Negocio</h1>
+        <p class="lead text-muted mt-3">
+            Análisis de las limitaciones de transformación digital y su impacto en la competitividad
+            de las empresas del municipio de <strong>Chía</strong> y la provincia de <strong>Sabana Centro</strong> (2026).
+        </p>
+    </div>
+
+    <div class="row g-4 mb-5">
+        <div class="col-lg-6">
+            <div class="sector-card p-4 h-100">
+                <span class="text-accent fw-bold small text-uppercase">Pregunta de Investigación 1</span>
+                <h4 class="fw-bold mt-2">Factores de Rezago Digital</h4>
+                <p class="text-muted mt-2 mb-0">
+                    ¿Qué pilares tecnológicos (conectividad, presencia web, comercio electrónico, gestión interna TIC,
+                    ciberseguridad y capacitación) explican en mayor medida la brecha competitiva entre las MiPymes
+                    urbanas y veredales de Chía?
+                </p>
+            </div>
+        </div>
+        <div class="col-lg-6">
+            <div class="sector-card p-4 h-100">
+                <span class="text-accent fw-bold small text-uppercase">Pregunta de Investigación 2</span>
+                <h4 class="fw-bold mt-2">Segmentación y Prescripción Accionable</h4>
+                <p class="text-muted mt-2 mb-0">
+                    ¿Es posible segmentar el tejido empresarial en perfiles de madurez digital mediante PCA, K-Means y DBSCAN
+                    para recomendar intervenciones priorizadas y conectar a cada empresa con aliados locales (CCB, SENA, MinTIC)?
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Evidencia Empírica Medida en CSV vs Hipótesis Técnica -->
+    <div class="sector-card p-4 p-lg-5 mb-5">
+        <span class="text-accent fw-bold small text-uppercase">Trazabilidad científica · Evidencia vs. Hipótesis</span>
+        <h2 class="fw-bold mt-2 mb-3">Del Síntoma Medido en el CSV a la Hipótesis Técnica en Red</h2>
+        <div class="alert alert-light border-start border-4 border-primary small mb-4">
+            <strong>Transparencia metodológica:</strong> El dataset <code>sabana_centro_digitalizacion_empresarial.csv</code>
+            mide puntajes empresariales en <strong>{{ summary.chia_enterprises }} empresas de Chía</strong> ({{ summary.chia_urban_count }} urbanas y {{ summary.chia_rural_count }} rurales/veredales),
+            pero no contiene capturas de paquetes ni configuraciones de router. Por ello, la tabla distingue explícitamente
+            entre <strong>hallazgos medidos en el CSV</strong> e <strong>hipótesis técnicas de infraestructura de red</strong>.
+        </div>
+
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead>
+                    <tr>
+                        <th>Fricción visible en la MiPyme</th>
+                        <th>Evidencia empírica medida en CSV (Chía, n = {{ summary.chia_enterprises }})</th>
+                        <th>Hipótesis técnica en capas de red y transporte (OSI / TCP-IP)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Brecha de conectividad urbano vs. veredal</strong></td>
+                        <td>
+                            <span class="badge bg-brand-subtle text-brand">Medido en CSV</span><br>
+                            Puntaje de conectividad: <strong>{{ summary.chia_connectivity_rural }}/100</strong> en zona veredal vs.
+                            <strong>{{ summary.chia_connectivity_urban }}/100</strong> en zona urbana (barrera de costo: {{ summary.chia_infra_cost_barrier }}/100).
+                        </td>
+                        <td>
+                            <span class="badge badge-proto">Inferencia técnica</span><br>
+                            Menor cobertura de fibra óptica (FTTH) en veredas y mayor dependencia de radioenlaces o enlaces móviles con mayor latencia y jitter.
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><strong>Baja adopción de pagos digitales y ventas en línea</strong></td>
+                        <td>
+                            <span class="badge bg-brand-subtle text-brand">Medido en CSV</span><br>
+                            Solo <strong>{{ summary.chia_digital_payments_pct }} %</strong> de las empresas en Chía reporta usar pagos digitales; las ventas digitales representan apenas <strong>{{ summary.chia_digital_sales_pct }} %</strong>.
+                        </td>
+                        <td>
+                            <span class="badge badge-proto">Inferencia técnica</span><br>
+                            Planes asimétricos sin enlace de respaldo (<em>failover</em> Multi-WAN): ante cortes del ISP principal se interrumpen pasarelas de pago y datáfonos.
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><strong>Procesos administrativos y facturación aislados</strong></td>
+                        <td>
+                            <span class="badge bg-brand-subtle text-brand">Medido en CSV</span><br>
+                            Solo <strong>{{ summary.chia_einvoice_pct }} %</strong> reporta facturación electrónica activa; gestión interna TIC promedio de <strong>{{ summary.chia_internal_tic_avg }}/100</strong>.
+                        </td>
+                        <td>
+                            <span class="badge badge-proto">Inferencia técnica</span><br>
+                            Ausencia de integración entre punto de venta, inventario y contabilidad mediante APIs REST sobre HTTPS y sincronización en la nube.
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><strong>Alta vulnerabilidad en protección de datos</strong></td>
+                        <td>
+                            <span class="badge bg-brand-subtle text-brand">Medido en CSV</span><br>
+                            Ciberseguridad es el pilar más bajo de Chía con un promedio de <strong>{{ summary.chia_cybersecurity_avg }}/100</strong>, y el <strong>{{ summary.high_critical_pct_chia }} %</strong> presenta limitación digital alta o crítica.
+                        </td>
+                        <td>
+                            <span class="badge badge-proto">Inferencia técnica</span><br>
+                            Redes Wi-Fi locales sin segmentación (VLAN) entre clientes y caja, ausencia de prioridades QoS y falta de políticas formales de cifrado y respaldo.
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+</div>
+{% endblock %}

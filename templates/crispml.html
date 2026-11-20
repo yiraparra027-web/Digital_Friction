@@ -1,0 +1,253 @@
+{% extends 'base.html' %}
+
+{% block title %}Metodología CRISP-ML — DigitalDivide CO{% endblock %}
+
+{% block content %}
+
+<!-- HERO SECTION -->
+<section class="py-5 bg-light border-bottom">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-8">
+                <span class="badge bg-brand-subtle text-accent px-3 py-2 mb-3">
+                    Marco Metodológico · CRISP-ML(Q)
+                </span>
+                <h1 class="display-4 fw-bold">
+                    Metodología CRISP-ML
+                </h1>
+                <p class="lead text-muted mt-4">
+                    Esta sección describe la metodología <strong>CRISP-ML(Q)</strong> aplicada a lo largo del ciclo de vida
+                    del proyecto <strong>DigitalDivide CO</strong>. Este marco estructurado e iterativo guía la comprensión
+                    de las brechas de digitalización y competitividad empresarial en <strong>Chía y Sabana Centro</strong>,
+                    la preparación de datos, el entrenamiento de modelos no supervisados, su evaluación y el despliegue del
+                    <strong>Autodiagnóstico Pyme</strong>.
+                </p>
+                <a href="/business-understanding" class="btn btn-brand px-4 py-2 rounded-3 mt-3">
+                    Explorar Fases del Proyecto
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- INTRODUCTION -->
+<section class="py-5">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-10">
+                <h2 class="fw-bold mb-4">
+                    ¿Qué es CRISP-ML(Q)?
+                </h2>
+                <p class="text-muted">
+                    <strong>CRISP-ML(Q)</strong> (<em>Cross-Industry Standard Process for Machine Learning with Quality Assurance</em>)
+                    es la evolución de CRISP-DM diseñada específicamente para sistemas de aprendizaje automático. A diferencia de la
+                    minería de datos tradicional, incorpora aseguramiento de calidad en cada etapa, reproducibilidad estadística,
+                    validación estructural y despliegue productivo.
+                </p>
+                <p class="text-muted">
+                    En nuestro proyecto, esta metodología se aplicó sobre <strong>4.080 registros históricos (vigencias 2024–2026)</strong>
+                    correspondientes a <strong>1.360 empresas de los 11 municipios de la provincia Sabana Centro</strong>, con foco
+                    prioritario en el municipio de <strong>Chía (280 empresas por vigencia)</strong>, con el fin de identificar
+                    limitaciones tecnológicas y diseñar rutas de mejora competitiva.
+                </p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- PHASES -->
+<section class="py-5 bg-light">
+    <div class="container">
+        <div class="text-center mb-5">
+            <h2 class="fw-bold">
+                Fases del Proyecto bajo CRISP-ML
+            </h2>
+            <p class="text-muted mt-3">
+                El desarrollo sigue un ciclo estructurado compuesto por cuatro grandes bloques iterativos e interconectados.
+            </p>
+        </div>
+
+        <div class="row g-4">
+            <!-- Comprensión del Negocio y Datos -->
+            <div class="col-md-6">
+                <div class="card h-100 shadow-sm border-0">
+                    <div class="card-body p-4">
+                        <div class="mb-3">
+                            <i class="bi bi-search fs-1 text-accent"></i>
+                        </div>
+                        <h4 class="fw-bold">
+                            Comprensión del Negocio y los Datos
+                        </h4>
+                        <p class="text-muted">
+                            Diagnóstico de las barreras de adopción tecnológica que frenan la productividad de las micro,
+                            pequeñas y medianas empresas en Sabana Centro y especialmente en Chía.
+                        </p>
+                        <ul class="text-muted">
+                            <li>Identificación de brechas en conectividad, comercio electrónico y ciberseguridad</li>
+                            <li>Definición de indicadores clave: <em>Índice de Madurez Digital</em>, <em>Competitividad</em> y <em>Limitación Digital</em></li>
+                            <li>Exploración de 4.080 registros empresariales (2024–2026) en 8 sectores económicos</li>
+                            <li>Comparativa inter-municipal entre los 11 municipios de Sabana Centro</li>
+                            <li>Evaluación de calidad, consistencia y cobertura sectorial del dataset</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Ingeniería de Datos -->
+            <div class="col-md-6">
+                <div class="card h-100 shadow-sm border-0">
+                    <div class="card-body p-4">
+                        <div class="mb-3">
+                            <i class="bi bi-database-gear fs-1 text-accent"></i>
+                        </div>
+                        <h4 class="fw-bold">
+                            Ingeniería de Datos
+                        </h4>
+                        <p class="text-muted">
+                            Construcción del pipeline reproducible en Python (<code>data_engineering.py</code>) para limpiar,
+                            transformar y estandarizar las variables de entrada del modelo y del simulador.
+                        </p>
+                        <ul class="text-muted">
+                            <li>Normalización de cadenas de texto, eliminación de duplicados y validación de rangos [0–100]</li>
+                            <li>Imputación robusta por mediana sectorial en variables numéricas</li>
+                            <li>Creación de variables derivadas: <code>digital_adoption_index</code> y <code>gap_to_sector_avg</code></li>
+                            <li>Codificación de tamaño empresarial, zona (urbana/rural) y sector económico</li>
+                            <li>Estandarización Z-score (<code>StandardScaler</code>) sobre los 8 parámetros del diagnóstico</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Ingeniería de Modelos -->
+            <div class="col-md-6">
+                <div class="card h-100 shadow-sm border-0">
+                    <div class="card-body p-4">
+                        <div class="mb-3">
+                            <i class="bi bi-cpu fs-1 text-accent"></i>
+                        </div>
+                        <h4 class="fw-bold">
+                            Ingeniería de Modelos ML
+                        </h4>
+                        <p class="text-muted">
+                            Entrenamiento y ajuste de tres algoritmos de aprendizaje no supervisado para segmentar empresas,
+                            reducir dimensionalidad y detectar casos atípicos de rezago digital.
+                        </p>
+                        <ul class="text-muted">
+                            <li><strong>PCA:</strong> Reducción de 8 indicadores correlacionados a 2 ejes (96,15 % de varianza retenida)</li>
+                            <li><strong>K-Means (K=4):</strong> Segmentación en 4 niveles de madurez y competitividad empresarial</li>
+                            <li><strong>DBSCAN:</strong> Detección de clústeres por densidad y empresas atípicas (ruido)</li>
+                            <li>Optimización de hiperparámetros mediante búsqueda en grilla y método del codo</li>
+                            <li>Validación cruzada mediante partición 80 % entrenamiento / 20 % validación</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Evaluación y Despliegue -->
+            <div class="col-md-6">
+                <div class="card h-100 shadow-sm border-0">
+                    <div class="card-body p-4">
+                        <div class="mb-3">
+                            <i class="bi bi-bar-chart-line fs-1 text-accent"></i>
+                        </div>
+                        <h4 class="fw-bold">
+                            Evaluación, Despliegue y Monitoreo
+                        </h4>
+                        <p class="text-muted">
+                            Verificación cuantitativa de la calidad de los clústeres y puesta en producción de la aplicación
+                            web en Flask con herramientas interactivas de autodiagnóstico.
+                        </p>
+                        <ul class="text-muted">
+                            <li>Evaluación interna con <em>Silhouette Score</em>, <em>Davies-Bouldin</em> y <em>Calinski-Harabasz</em></li>
+                            <li>Pruebas de consistencia estructural (Kolmogorov-Smirnov, ARI y NMI)</li>
+                            <li>Despliegue del simulador <strong>Autodiagnóstico Pyme</strong> basado en PCA + K-Means</li>
+                            <li>Generación automática de brechas frente al promedio sectorial de Chía</li>
+                            <li>Trazabilidad y reproducibilidad completa del código y resultados</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- MODELS SECTION -->
+<section class="py-5">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-6">
+                <h2 class="fw-bold mb-4">
+                    Modelos de Machine Learning Empleados
+                </h2>
+                <p class="text-muted">
+                    El sistema combina tres técnicas complementarias de aprendizaje no supervisado para analizar el
+                    comportamiento digital del tejido empresarial de Chía y Sabana Centro:
+                </p>
+
+                <div class="mt-4">
+                    <h5 class="fw-bold">
+                        K-Means (Segmentación en 4 Perfiles)
+                    </h5>
+                    <p class="text-muted">
+                        Clasifica a las empresas en cuatro niveles operativos: <em>Tradicional / Rezagada</em>,
+                        <em>Digitalización Básica</em>, <em>En Consolidación</em> y <em>Líder Digital Competitiva</em>.
+                    </p>
+
+                    <h5 class="fw-bold mt-4">
+                        PCA (Análisis de Componentes Principales)
+                    </h5>
+                    <p class="text-muted">
+                        Sintetiza los 8 indicadores del autodiagnóstico en dos dimensiones ortogonales:
+                        <strong>PC1 (Madurez Tecnológica, 94,83 %)</strong> y <strong>PC2 (Capacidad Competitiva, 1,32 %)</strong>.
+                    </p>
+
+                    <h5 class="fw-bold mt-4">
+                        DBSCAN (Agrupamiento por Densidad)
+                    </h5>
+                    <p class="text-muted">
+                        Identifica agrupaciones naturales sin asumir formas esféricas y aísla empresas con comportamientos
+                        extremos de vulnerabilidad digital para revisión prioritaria.
+                    </p>
+                </div>
+            </div>
+
+            <div class="col-lg-6">
+                <div class="card border-0 shadow-sm">
+                    <div class="card-body p-5">
+                        <h4 class="fw-bold mb-4">
+                            Objetivo Estratégico del Proyecto
+                        </h4>
+                        <p class="text-muted">
+                            Brindar a empresarios, gremios locales y entidades territoriales de <strong>Chía y Sabana Centro</strong>
+                            una herramienta analítica basada en evidencia para medir con precisión sus brechas digitales.
+                        </p>
+                        <p class="text-muted mb-0">
+                            A partir de los datos empíricos y del modelo predictivo, las Pymes pueden simular mejoras en
+                            conectividad, comercio electrónico, ciberseguridad o capacitación y visualizar en tiempo real
+                            cómo aumenta su competitividad frente a su sector.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- FINAL SECTION -->
+<section class="py-5 bg-dark text-white">
+    <div class="container text-center">
+        <h2 class="fw-bold">
+            DigitalDivide CO · Sabana Centro &amp; Chía
+        </h2>
+        <p class="mt-4 opacity-75">
+            Plataforma de ciencia de datos aplicada al diagnóstico de limitaciones en la digitalización y competitividad empresarial.
+        </p>
+        <a href="/data-understanding" class="btn btn-brand px-4 py-2 rounded-3 mt-3">
+            Continuar a Comprensión de Datos
+        </a>
+    </div>
+</section>
+
+{% endblock %}
+
+

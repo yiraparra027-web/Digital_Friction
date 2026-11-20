@@ -1,0 +1,256 @@
+{% extends 'base.html' %}
+
+{% block title %}Perfiles de madurez — Evaluación empresarial{% endblock %}
+
+{% block content %}
+
+<style>
+  :root {
+    --km-bg:      #0B3D91;
+    --km-surface: #263238;
+    --km-border:  #607D8B;
+    --km-muted:   #CFD8DC;
+    --km-green:   #4DD0E1;
+    --km-amber:   #F9A825;
+  }
+  .km-hero {
+    background: var(--km-bg);
+    padding: 4rem 0 3rem;
+    border-bottom: 1px solid var(--km-border);
+  }
+  .km-badge {
+    display: inline-block;
+    background: rgba(0,172,193,.15);
+    color: var(--km-green);
+    border: 1px solid rgba(0,172,193,.35);
+    border-radius: 50px;
+    font-size: .78rem;
+    font-weight: 600;
+    padding: .35rem 1rem;
+    margin-bottom: 1.2rem;
+    text-transform: uppercase;
+  }
+  .km-hero h1 { color: #fff; font-weight: 800; }
+  .km-hero h1 span { color: var(--km-green); }
+  .km-hero p { color: var(--km-muted); max-width: 660px; }
+  .stat-cards { display: flex; gap: 1rem; flex-wrap: wrap; margin-top: 2rem; }
+  .stat-card {
+    background: rgba(11,61,145, 0.45);
+    border: 1px solid rgba(0,172,193, 0.25);
+    border-radius: 12px;
+    padding: 1rem 1.4rem;
+    min-width: 145px;
+    flex: 1;
+  }
+  .stat-card .label { color: rgba(224,247,250, 0.75); font-size: .75rem; text-transform: uppercase; }
+  .stat-card .value { color: #4DD0E1; font-size: 1.55rem; font-weight: 800; margin-top: .25rem; }
+  .stat-card .sub { color: rgba(224,247,250, 0.6); font-size: .78rem; }
+  .km-section { padding: 3.5rem 0; border-bottom: 1px solid #CFD8DC; }
+  .section-tag { color: #00897B; font-size: .8rem; font-weight: 700; text-transform: uppercase; display: block; margin-bottom: .4rem; }
+  .section-title { color: #1C2B3A; font-weight: 700; }
+  .section-desc { color: #607D8B; }
+  .dark-card { background: var(--km-surface); border: 1px solid var(--km-border); border-radius: 16px; padding: 1.75rem; }
+  .dark-card h5 { color: #fff; font-weight: 700; }
+  .km-plot { border-radius: 14px; border: 1px solid #CFD8DC; width: 100%; background: #fff; }
+  .km-table { width: 100%; border-collapse: collapse; }
+  .km-table th { color: var(--km-muted); font-size: .75rem; text-transform: uppercase; padding: .7rem .9rem; border-bottom: 1px solid var(--km-border); }
+  .km-table td { padding: .75rem .9rem; color: #CFD8DC; font-size: .9rem; border-bottom: 1px solid var(--km-border); }
+  .pipeline { display: flex; flex-direction: column; gap: 1.2rem; }
+  .pipe-step { display: flex; gap: 1rem; align-items: flex-start; }
+  .pipe-icon { width: 38px; height: 38px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-weight: 800; color: #fff; flex-shrink: 0; }
+  .pipe-content h6 { color: #fff; font-weight: 700; margin-bottom: .25rem; }
+  .pipe-content p { color: var(--km-muted); font-size: .88rem; margin: 0; }
+</style>
+
+<!-- ENCABEZADO -->
+<section class="km-hero">
+  <div class="container">
+    <div class="km-badge">Evaluación empresarial · Perfiles de madurez</div>
+    <h1 class="display-4 fw-bold mb-3">
+      Perfiles de madurez <span>K-Means (K = {{ results.k_final }})</span>
+    </h1>
+    <p class="lead mb-0">
+      Agrupamiento no supervisado de las empresas de <strong>Chía y Sabana Centro</strong> en cuatro perfiles
+      de madurez digital y competitividad a partir de los 8 indicadores del diagnóstico empresarial.
+    </p>
+
+    <div class="stat-cards">
+      <div class="stat-card">
+        <div class="label">Total Empresas</div>
+        <div class="value">{{ results.n_total|int }}</div>
+        <div class="sub">Vigencia 2026</div>
+      </div>
+      <div class="stat-card">
+        <div class="label">Entrenamiento</div>
+        <div class="value">{{ results.n_train|int }}</div>
+        <div class="sub">Partición 80 %</div>
+      </div>
+      <div class="stat-card">
+        <div class="label">Validación</div>
+        <div class="value">{{ results.n_val|int }}</div>
+        <div class="sub">Partición 20 %</div>
+      </div>
+      <div class="stat-card">
+        <div class="label">Clústeres (K)</div>
+        <div class="value">{{ results.k_final }}</div>
+        <div class="sub">Perfiles operativos</div>
+      </div>
+      <div class="stat-card">
+        <div class="label">Silueta Val.</div>
+        <div class="value">{{ "%.4f"|format(results.metrics.val_silhouette) }}</div>
+        <div class="sub">Cohesión y separación</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 1 · ALGORITMO Y PROYECCIÓN -->
+<section class="km-section" style="background:#fff;">
+  <div class="container">
+    <span class="section-tag">1 · Funcionamiento del Algoritmo</span>
+    <h2 class="section-title mb-2">¿Cómo opera K-Means sobre el Tejido Empresarial?</h2>
+    <p class="section-desc mb-4" style="max-width:720px;">
+      K-Means particiona las <strong>{{ results.n_total }} empresas</strong> en <strong>K = {{ results.k_final }} clústeres</strong> minimizando la suma
+      de distancias cuadráticas internas (inercia) en el espacio estandarizado de 8 dimensiones.
+    </p>
+
+    <div class="row g-4 align-items-stretch">
+      <div class="col-lg-7">
+        <div class="dark-card h-100">
+          <h5 class="mb-4">Etapas del Entrenamiento</h5>
+          <div class="pipeline">
+            {% set steps = [
+              ('#2E7D32', '1', 'Inicialización Inteligente', 'Selecciona 4 centroides iniciales maximizando la distancia entre ellos para evitar mínimos locales.'),
+              ('#00ACC1', '2', 'Asignación por Distancia Euclidiana', 'Cada empresa de Chía y Sabana Centro se asigna al centroide más cercano según sus 8 indicadores estandarizados.'),
+              ('#F9A825', '3', 'Actualización de Centroides', 'Se recalcula el vector promedio de cada grupo en conectividad, presencia, comercio electrónico, TIC, seguridad y capacitación.'),
+              ('#1565C0', '4', 'Convergencia Iterativa', 'El proceso se repite hasta estabilizar los centroides con mínima variación interna.'),
+              ('#C62828', '5', 'Ordenamiento por Madurez Digital', 'Los 4 grupos se ordenan de C0 (Rezagada) a C3 (Líder Digital Competitiva).')
+            ] %}
+            {% for colour, num, title, desc in steps %}
+            <div class="pipe-step">
+              <div class="pipe-icon" style="background:{{ colour }}">{{ num }}</div>
+              <div class="pipe-content">
+                <h6>{{ title }}</h6>
+                <p>{{ desc }}</p>
+              </div>
+            </div>
+            {% endfor %}
+          </div>
+        </div>
+      </div>
+      <div class="col-lg-5">
+        <div class="card border-0 shadow-sm p-4 h-100">
+          <h5 class="fw-bold mb-2">Proyección Espacial de los 4 Clústeres</h5>
+          <p class="text-muted small">
+            Distribución de las empresas segmentadas sobre el plano de componentes principales:
+          </p>
+          <img src="{{ url_for('static', filename='img/kmeans/pca_scatter.png') }}"
+               alt="Dispersión PCA 2D de los 4 clústeres K-Means" class="km-plot mt-auto">
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 2 · SELECCIÓN DE K -->
+<section class="km-section" style="background:#F5F7FA;">
+  <div class="container">
+    <span class="section-tag">2 · Selección del Número de Grupos</span>
+    <h2 class="section-title mb-2">Elección del Número Óptimo de Clústeres (K = 4)</h2>
+    <p class="section-desc mb-4" style="max-width:720px;">
+      Se evaluaron valores de <strong>K entre 2 y 6</strong> combinando el <strong>Método del Codo (Inercia)</strong> y el
+      <strong>Coeficiente de Silueta en validación</strong>. Con <strong>K = 4</strong> se obtiene una segmentación clara en cuatro niveles de madurez.
+    </p>
+
+    <div class="row g-4">
+      <div class="col-lg-8">
+        <img src="{{ url_for('static', filename='img/kmeans/elbow_silhouette.png') }}"
+             alt="Método del Codo y Coeficiente de Silueta" class="km-plot">
+      </div>
+      <div class="col-lg-4">
+        <div class="dark-card h-100">
+          <h5 class="mb-3">Configuración Aplicada</h5>
+          <table class="km-table">
+            <thead><tr><th>Parámetro</th><th>Valor</th></tr></thead>
+            <tbody>
+              <tr><td>Número de clústeres (K)</td><td style="color:var(--km-green);font-weight:700;">{{ results.k_final }}</td></tr>
+              <tr><td>Método de inicialización</td><td>k-means++</td></tr>
+              <tr><td>Ejecuciones independientes</td><td>20 corridas</td></tr>
+              <tr><td>Normalización previa</td><td>Puntaje Z (media 0, desv. 1)</td></tr>
+              <tr><td>Variables incluidas</td><td>8 indicadores TIC</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 3 · CONVERGENCIA Y PERFILES POR PILAR -->
+<section class="km-section" style="background:#fff;">
+  <div class="container">
+    <span class="section-tag">3 · Entrenamiento y Perfiles Tecnológicos</span>
+    <h2 class="section-title mb-2">Curva de Convergencia y Comparativa por Pilar TIC</h2>
+    <p class="section-desc mb-4" style="max-width:720px;">
+      El modelo se entrena sobre el <strong>80 % de los registros ({{ results.n_train }} empresas)</strong> y
+      se verifica sobre el <strong>20 % de validación ({{ results.n_val }} empresas)</strong>.
+    </p>
+
+    <div class="row g-4">
+      <div class="col-lg-6">
+        <div class="card border-0 shadow-sm p-4 h-100">
+          <h5 class="fw-bold mb-2">Convergencia de la Inercia</h5>
+          <p class="text-muted small">Estabilización de la suma de distancias internas en {{ results.metrics.n_iter }} iteraciones.</p>
+          <img src="{{ url_for('static', filename='img/kmeans/convergence.png') }}"
+               alt="Curva de Convergencia K-Means" class="km-plot mt-auto">
+        </div>
+      </div>
+      <div class="col-lg-6">
+        <div class="card border-0 shadow-sm p-4 h-100">
+          <h5 class="fw-bold mb-2">Perfil Tecnológico por Clúster</h5>
+          <p class="text-muted small">Desempeño promedio de cada segmento en los seis pilares de transformación digital.</p>
+          <img src="{{ url_for('static', filename='img/kmeans/cluster_profiles.png') }}"
+               alt="Perfil Tecnológico por Clúster" class="km-plot mt-auto">
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 4 · HOJAS DE RUTA: ARQUITECTURA Y SOLUCIONES DE COMUNICACIÓN DE DATOS -->
+<section class="km-section" style="background:#F5F7FA;">
+  <div class="container">
+    <span class="section-tag">4 · Hojas de Ruta Prescriptivas por Perfil</span>
+    <h2 class="section-title mb-2">Arquitectura y Soluciones de Comunicación de Datos</h2>
+    <p class="section-desc mb-4" style="max-width:760px;">
+      Cada perfil de madurez requiere una intervención distinta en las capas de red y transporte.
+      La hoja de ruta parte de lo que la infraestructura de cada segmento puede sostener hoy y
+      define el siguiente salto técnico para reducir latencia, pérdida de paquetes e indisponibilidad.
+    </p>
+    <div class="row g-4">
+      {% for cid, arch in network_architecture.items() %}
+      <div class="col-md-6">
+        <div class="arch-box h-100">
+          <div class="d-flex align-items-center gap-3 mb-2">
+            <span class="net-icon">
+              <i class="bi {{ arch.icono }} text-accent fs-4"></i>
+            </span>
+            <div>
+              <div class="arch-title">{{ arch.perfil }}</div>
+              <div class="small text-muted">{{ arch.resumen }}</div>
+            </div>
+          </div>
+          <ul>
+            {% for item in arch.soluciones %}<li>{{ item }}</li>{% endfor %}
+          </ul>
+          <div class="d-flex flex-wrap gap-1">
+            {% for t in arch.tecnologias %}<span class="badge badge-proto">{{ t }}</span>{% endfor %}
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+{% endblock %}

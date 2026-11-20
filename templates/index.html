@@ -1,0 +1,215 @@
+{% extends 'base.html' %}
+
+{% block title %}Observatorio Empresarial — Chía & Sabana Centro{% endblock %}
+
+{% block content %}
+
+<!-- HERO SECTION -->
+<section class="hero-section">
+    <div class="container">
+        <div class="row align-items-center hero-row g-5">
+
+            <div class="col-lg-6">
+                <span class="badge bg-brand-subtle text-accent border border-accent-subtle px-3 py-2 mb-3 rounded-pill">
+                    <i class="bi bi-geo-alt-fill me-1"></i> Chía &amp; Sabana Centro · Vigencia {{ summary.vigencia }}
+                </span>
+
+                <h1 class="display-4 fw-bold hero-title">
+                    Limitaciones de
+                    <span class="text-accent">transformación digital</span>
+                    y competitividad empresarial
+                </h1>
+
+                <p class="lead text-muted mt-4">
+                    Plataforma analítica y prescriptiva para diagnosticar las brechas tecnológicas de las
+                    <strong>{{ summary.chia_enterprises }} empresas de Chía</strong> (en un ecosistema regional de
+                    <strong>{{ summary.total_enterprises }} empresas</strong> de Sabana Centro), identificar rezagos
+                    sectoriales y generar hojas de ruta accionables.
+                </p>
+
+                <div class="d-flex flex-wrap gap-3 mt-4">
+                    <a href="{{ url_for('pca_prediction') }}" class="btn btn-brand btn-lg px-4 rounded-3 fw-semibold">
+                        <i class="bi bi-cpu me-2"></i>Simular mi Empresa
+                    </a>
+                    <a href="/business-understanding" class="btn btn-outline-dark btn-lg px-4 rounded-3">
+                        Ver Problemática
+                    </a>
+                </div>
+            </div>
+
+            <div class="col-lg-6">
+                <div class="dashboard-card">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <span class="dashboard-subtitle text-uppercase">Radiografía Empresarial · Chía</span>
+                        <span class="badge bg-brand">Corte {{ summary.vigencia }}</span>
+                    </div>
+
+                    <div class="d-flex align-items-baseline gap-3">
+                        <h2 class="display-2 fw-bold mb-0 text-white">
+                            {{ summary.high_critical_pct_chia }}%
+                        </h2>
+                        <span class="text-warning fw-semibold">en limitación digital Alta o Crítica</span>
+                    </div>
+
+                    <p class="dashboard-description mt-2">
+                        Empresas en Chía que operan con baja adopción de comercio electrónico, gestión interna manual o escasa presencia digital frente a sus pares.
+                    </p>
+
+                    <div class="row g-3 my-3">
+                        <div class="col-6">
+                            <div class="kpi-pill">
+                                <div class="small text-white-50">Madurez Digital Chía</div>
+                                <div class="fs-3 fw-bold text-accent">{{ summary.avg_maturity_chia }} <small class="fs-6 text-white-50">/ 100</small></div>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="kpi-pill">
+                                <div class="small text-white-50">Competitividad Chía</div>
+                                <div class="fs-3 fw-bold text-info">{{ summary.avg_competitiveness_chia }} <small class="fs-6 text-white-50">/ 100</small></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mt-3">
+                        <div class="mb-3">
+                            <div class="d-flex justify-content-between small mb-1">
+                                <span>Gastronomía y Turismo (Zona Veredal / Rural)</span>
+                                <span class="text-danger fw-bold">Brecha Crítica</span>
+                            </div>
+                            <div class="progress">
+                                <div class="progress-bar bg-danger" style="width: 74%"></div>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <div class="d-flex justify-content-between small mb-1">
+                                <span>Comercio al por Menor y Ferreterías</span>
+                                <span class="text-warning fw-bold">Brecha Media-Alta</span>
+                            </div>
+                            <div class="progress">
+                                <div class="progress-bar bg-warning" style="width: 58%"></div>
+                            </div>
+                        </div>
+
+                        <div>
+                            <div class="d-flex justify-content-between small mb-1">
+                                <span>Servicios Profesionales y TI</span>
+                                <span class="text-accent fw-bold">Alta Consolidación</span>
+                            </div>
+                            <div class="progress">
+                                <div class="progress-bar bg-brand" style="width: 82%"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</section>
+
+<!-- PROBLEM STATEMENT -->
+<section class="py-5 bg-white">
+    <div class="container">
+        <div class="row align-items-center g-5">
+            <div class="col-lg-6">
+                <span class="text-accent fw-bold text-uppercase small">Contexto Territorial · Chía</span>
+                <h2 class="display-6 fw-bold mt-2 mb-3">
+                    ¿Por qué las MiPymes de Chía pierden competitividad frente a la aceleración digital?
+                </h2>
+                <p class="lead text-muted">
+                    A pesar de su cercanía con Bogotá y su dinamismo comercial, una proporción significativa de
+                    micro y pequeñas empresas en Chía enfrenta fricciones internas: falta de presupuestos TIC,
+                    ausencia de pagos digitales interoperables y procesos administrativos manuales.
+                </p>
+                <p class="text-muted">
+                    Mediante aprendizaje no supervisado (<strong>PCA, K-Means y DBSCAN</strong>), este sistema segmenta
+                    el tejido empresarial en 4 perfiles de madurez, detecta empresas atípicas de alta trayectoria
+                    con rezago digital y entrega recomendaciones personalizadas por sector.
+                </p>
+            </div>
+
+            <div class="col-lg-6">
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <div class="sector-card p-4 h-100">
+                            <div class="badge bg-danger-subtle text-danger mb-2">Clúster 0</div>
+                            <h5 class="fw-bold">Tradicional / Rezagada</h5>
+                            <p class="small text-muted mb-0">Operación presencial, sin facturación electrónica integrada ni vitrina digital activa.</p>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="sector-card p-4 h-100">
+                            <div class="badge bg-warning-subtle text-warning mb-2">Clúster 1</div>
+                            <h5 class="fw-bold">Digitalización Básica</h5>
+                            <p class="small text-muted mb-0">Uso informal de WhatsApp y redes, pero sin analítica, inventarios ni pasarelas de pago.</p>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="sector-card p-4 h-100">
+                            <div class="badge bg-info-subtle text-info mb-2">Clúster 2</div>
+                            <h5 class="fw-bold">En Consolidación</h5>
+                            <p class="small text-muted mb-0">Software contable activo y canales híbridos; lista para escalar comercio electrónico y CRM.</p>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="sector-card p-4 h-100">
+                            <div class="badge bg-brand-subtle text-accent mb-2">Clúster 3</div>
+                            <h5 class="fw-bold">Líder Competitiva</h5>
+                            <p class="small text-muted mb-0">Alta madurez en los 6 pilares TIC, ciberseguridad y expansión comercial en Sabana Centro.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- CRISP-ML NAVIGATION -->
+<section class="py-5">
+    <div class="container">
+        <div class="text-center mb-5">
+            <span class="text-accent fw-bold text-uppercase small">Arquitectura del Proyecto</span>
+            <h2 class="display-6 fw-bold mt-2">Flujo CRISP-ML(Q) Aplicado</h2>
+        </div>
+
+        <div class="row g-4">
+            <div class="col-md-6 col-lg-3">
+                <div class="sector-card p-4 h-100 text-center">
+                    <i class="bi bi-briefcase fs-1 text-accent"></i>
+                    <h5 class="fw-bold mt-3">Problemática</h5>
+                    <p class="small text-muted">Objetivos, hipótesis y alcance empresarial en Chía.</p>
+                    <a href="/business-understanding" class="btn btn-outline-brand btn-sm mt-2">Explorar</a>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-3">
+                <div class="sector-card p-4 h-100 text-center">
+                    <i class="bi bi-sliders fs-1 text-accent"></i>
+                    <h5 class="fw-bold mt-3">Ingeniería de Datos</h5>
+                    <p class="small text-muted">Cálculo de <code>gap_to_sector_avg</code> y 6 pilares TIC.</p>
+                    <a href="/data-engineering" class="btn btn-outline-brand btn-sm mt-2">Explorar</a>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-3">
+                <div class="sector-card p-4 h-100 text-center">
+                    <i class="bi bi-diagram-3 fs-1 text-accent"></i>
+                    <h5 class="fw-bold mt-3">Evaluación empresarial</h5>
+                    <p class="small text-muted">Mapa de madurez, perfiles de madurez (4) y alertas de rezago crítico.</p>
+                    <a href="{{ url_for('kmeans') }}" class="btn btn-outline-brand btn-sm mt-2">Explorar</a>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-3">
+                <div class="sector-card p-4 h-100 text-center border-accent">
+                    <i class="bi bi-lightning-charge fs-1 text-accent"></i>
+                    <h5 class="fw-bold mt-3">Autodiagnóstico</h5>
+                    <p class="small text-muted">Simulador en tiempo real y hoja de ruta en Chía.</p>
+                    <a href="{{ url_for('pca_prediction') }}" class="btn btn-brand btn-sm mt-2">Probar ahora</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+{% endblock %}
+
+

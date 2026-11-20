@@ -1,0 +1,179 @@
+{% extends "base.html" %}
+
+{% block title %}Solidez de indicadores — Precisión del diagnóstico{% endblock %}
+
+{% block content %}
+
+<!-- ENCABEZADO -->
+<section class="py-5" style="background:linear-gradient(135deg,#0B3D91 0%,#1565C0 60%,#0B3D91 100%);color:#fff;">
+  <div class="container">
+    <div class="row align-items-center">
+      <div class="col-lg-8">
+        <span class="badge bg-brand px-3 py-2 mb-3 fs-6">Precisión del diagnóstico · Solidez de indicadores</span>
+        <h1 class="display-4 fw-bold mb-3">
+          Solidez de indicadores <span style="color:#00ACC1;">PCA (2 componentes)</span>
+        </h1>
+        <p class="lead opacity-75">
+          Validación del error de reconstrucción, estabilidad estadística entre entrenamiento y prueba
+          (prueba de Kolmogorov-Smirnov) y mejora en la calidad de agrupamiento sobre las empresas de
+          <strong>Chía y Sabana Centro</strong>.
+        </p>
+      </div>
+      <div class="col-lg-4 mt-4 mt-lg-0">
+        <div class="row g-3">
+          <div class="col-6">
+            <div class="rounded-4 p-3 text-center" style="background:rgba(255,255,255,.08);">
+              <div class="fs-2 fw-bold text-accent">{{ results.total_retained_variance }}%</div>
+              <div class="small opacity-75">Varianza Retenida</div>
+            </div>
+          </div>
+          <div class="col-6">
+            <div class="rounded-4 p-3 text-center" style="background:rgba(255,255,255,.08);">
+              <div class="fs-2 fw-bold text-warning">+{{ results.clustering_metrics.average_improvement }}%</div>
+              <div class="small opacity-75">Mejora Promedio</div>
+            </div>
+          </div>
+          <div class="col-6">
+            <div class="rounded-4 p-3 text-center" style="background:rgba(255,255,255,.08);">
+              <div class="fs-2 fw-bold text-info">{{ results.agreement.ari }}</div>
+              <div class="small opacity-75">Índice Rand (ARI)</div>
+            </div>
+          </div>
+          <div class="col-6">
+            <div class="rounded-4 p-3 text-center" style="background:rgba(255,255,255,.08);">
+              <div class="fs-2 fw-bold text-accent">{{ results.agreement.nmi }}</div>
+              <div class="small opacity-75">Mutua Norm. (NMI)</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="container py-5">
+
+<!-- SECCIÓN 1 · RECONSTRUCCIÓN Y CONSISTENCIA -->
+<section class="mb-5">
+  <div class="d-flex align-items-center gap-3 mb-4">
+    <div class="rounded-circle d-flex align-items-center justify-content-center fw-bold text-white"
+         style="width:40px;height:40px;background:#0B3D91;">1</div>
+    <h2 class="fw-bold mb-0">Error de Reconstrucción y Estabilidad Estadística</h2>
+  </div>
+
+  <div class="row g-4">
+    <div class="col-lg-4">
+      <div class="card border-0 shadow-sm p-4 h-100">
+        <h5 class="fw-bold mb-4"><i class="bi bi-speedometer2 me-2 text-accent"></i>Calidad de Reconstrucción</h5>
+        <div class="mb-3">
+          <div class="d-flex justify-content-between mb-1">
+            <span class="fw-semibold">Error Cuadrático (Entrenamiento)</span>
+            <span class="badge bg-brand fs-6">{{ results.reconstruction.train_mse }}</span>
+          </div>
+          <div class="small text-muted">Pérdida media al reconstruir los 8 indicadores desde 2 ejes.</div>
+        </div>
+        <div class="mb-3">
+          <div class="d-flex justify-content-between mb-1">
+            <span class="fw-semibold">Error Cuadrático (Prueba)</span>
+            <span class="badge bg-info fs-6">{{ results.reconstruction.test_mse }}</span>
+          </div>
+          <div class="small text-muted">Comportamiento estable sin sobreajuste frente al entrenamiento.</div>
+        </div>
+        <div class="mb-3">
+          <div class="d-flex justify-content-between mb-1">
+            <span class="fw-semibold">Error Absoluto (Prueba)</span>
+            <span class="badge bg-warning text-dark fs-6">{{ results.reconstruction.test_mae }}</span>
+          </div>
+          <div class="small text-muted">Desviación media en unidades estandarizadas.</div>
+        </div>
+        <div class="alert alert-success border-0 small mt-auto mb-0" style="background:#F5F7FA;">
+          <strong>Prueba Kolmogorov-Smirnov:</strong><br>
+          p-valor CP1 = <strong>{{ results.validation.ks_test.pc1_pvalue }}</strong> ·
+          p-valor CP2 = <strong>{{ results.validation.ks_test.pc2_pvalue }}</strong><br>
+          Ambas particiones comparten la misma distribución estadística.
+        </div>
+      </div>
+    </div>
+
+    <div class="col-lg-8">
+      <div class="card border-0 shadow-sm p-4 h-100">
+        <h5 class="fw-bold mb-2"><i class="bi bi-distribute-vertical me-2 text-accent"></i>Distribución en Entrenamiento vs. Prueba</h5>
+        <p class="text-muted small mb-3">
+          Comparación de densidades de CP1 y CP2 entre el 80 % de entrenamiento y el 20 % de prueba para confirmar ausencia de sesgo muestral.
+        </p>
+        <img src="{{ url_for('static', filename='img/pca/reconstruction_consistency.png') }}"
+             alt="Consistencia de distribución PCA entre entrenamiento y prueba"
+             class="img-fluid rounded-3 border mt-auto">
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SECCIÓN 2 · IMPACTO EN AGRUPAMIENTO -->
+<section class="mb-5">
+  <div class="d-flex align-items-center gap-3 mb-4">
+    <div class="rounded-circle d-flex align-items-center justify-content-center fw-bold text-white"
+         style="width:40px;height:40px;background:#0B3D91;">2</div>
+    <h2 class="fw-bold mb-0">Ganancia en Calidad de Agrupamiento (8D vs. PCA 2D)</h2>
+  </div>
+
+  <div class="row g-4">
+    <div class="col-lg-6">
+      <div class="card border-0 shadow-sm p-4 h-100">
+        <h5 class="fw-bold mb-2"><i class="bi bi-bar-chart-line me-2 text-accent"></i>Comparación de Métricas de Segmentación</h5>
+        <p class="text-muted small mb-3">
+          Al eliminar la redundancia entre las 8 variables originales, los grupos empresariales ganan cohesión y separación.
+        </p>
+        <img src="{{ url_for('static', filename='img/pca/clustering_comparison.png') }}"
+             alt="Comparación de calidad de agrupamiento entre espacio original y PCA"
+             class="img-fluid rounded-3 border mt-auto">
+      </div>
+    </div>
+
+    <div class="col-lg-6">
+      <div class="card border-0 shadow-sm p-4 h-100">
+        <h5 class="fw-bold mb-3"><i class="bi bi-table me-2 text-accent"></i>Resultados Cuantitativos Comparados</h5>
+        <div class="table-responsive mb-3">
+          <table class="table table-hover align-middle">
+            <thead class="table-light">
+              <tr>
+                <th>Métrica</th>
+                <th class="text-center">Espacio 8D</th>
+                <th class="text-center">Espacio PCA 2D</th>
+                <th class="text-end">Variación</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="fw-semibold">Coeficiente de Silueta (↑)</td>
+                <td class="text-center">{{ results.clustering_metrics.original_space.silhouette }}</td>
+                <td class="text-center fw-bold text-accent">{{ results.clustering_metrics.pca_space.silhouette }}</td>
+                <td class="text-end text-accent fw-bold">+{{ results.clustering_metrics.improvements.silhouette }}%</td>
+              </tr>
+              <tr>
+                <td class="fw-semibold">Índice Davies-Bouldin (↓)</td>
+                <td class="text-center">{{ results.clustering_metrics.original_space.davies_bouldin }}</td>
+                <td class="text-center fw-bold text-accent">{{ results.clustering_metrics.pca_space.davies_bouldin }}</td>
+                <td class="text-end text-accent fw-bold">+{{ results.clustering_metrics.improvements.davies_bouldin }}%</td>
+              </tr>
+              <tr>
+                <td class="fw-semibold">Índice Calinski-Harabasz (↑)</td>
+                <td class="text-center">{{ results.clustering_metrics.original_space.calinski_harabasz }}</td>
+                <td class="text-center fw-bold text-accent">{{ results.clustering_metrics.pca_space.calinski_harabasz }}</td>
+                <td class="text-end text-accent fw-bold">+{{ results.clustering_metrics.improvements.calinski_harabasz }}%</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="alert alert-light border small mt-auto mb-0">
+          <strong>Concordancia estructural:</strong> El <strong>{{ results.agreement.overall_agreement }} %</strong> de las empresas mantienen exactamente la misma asignación de clúster tras reducir de 8 a 2 dimensiones (ARI = {{ results.agreement.ari }}, NMI = {{ results.agreement.nmi }}).
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+</div>
+{% endblock %}
+
+

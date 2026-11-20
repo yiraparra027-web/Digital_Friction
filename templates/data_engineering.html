@@ -1,0 +1,394 @@
+{% extends 'base.html' %}
+
+{% block title %}Ingeniería de Datos y Parámetros del Autodiagnóstico — DigitalDivide CO{% endblock %}
+
+{% block content %}
+
+<div class="container py-5">
+
+    <!-- Header -->
+    <span class="badge bg-brand bg-opacity-10 text-accent px-3 py-2 mb-3">Fase CRISP-ML · Ingeniería de Datos</span>
+    <h1 class="display-4 fw-bold">Ingeniería de Datos y Parámetros del Autodiagnóstico Pyme</h1>
+    <p class="lead text-muted mt-3 mb-5">
+        Pipeline de procesamiento sobre <strong><code>sabana_centro_digitalizacion_empresarial.csv</code></strong>
+        (Vigencia 2026) y documentación detallada de los <strong>8 parámetros ajustables</strong> en el simulador de
+        <strong>Autodiagnóstico Pyme</strong>.
+    </p>
+
+    <div class="row g-4">
+
+        <!-- PASO 1 · PIPELINE DE PREPARACIÓN -->
+        <div class="col-12">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body p-4">
+                    <div class="d-flex align-items-center gap-3 mb-3">
+                        <span class="badge bg-brand bg-opacity-10 text-accent fs-6 px-3 py-2">Pipeline</span>
+                        <h2 class="h4 fw-bold mb-0">Transformaciones Ejecutadas en <code>data_engineering.py</code></h2>
+                    </div>
+                    <p class="text-muted mb-4">
+                        Antes de alimentar los modelos PCA, K-Means y DBSCAN, los datos atraviesan cuatro etapas estandarizadas
+                        para garantizar integridad numérica y comparabilidad sectorial.
+                    </p>
+
+                    <div class="row g-3">
+                        <div class="col-md-3">
+                            <div class="bg-light rounded-3 p-3 h-100 border">
+                                <span class="badge bg-brand mb-2">1. Limpieza</span>
+                                <p class="small text-muted mb-0">Eliminación de duplicados por <code>(codigo_empresa, vigencia)</code>, normalización en mayúsculas y validación de rangos [0–100].</p>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="bg-light rounded-3 p-3 h-100 border">
+                                <span class="badge bg-brand mb-2">2. Imputación</span>
+                                <p class="small text-muted mb-0">Conversión decimal uniforme e imputación por mediana agrupada por <code>sector</code> económico para evitar sesgos.</p>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="bg-light rounded-3 p-3 h-100 border">
+                                <span class="badge bg-brand mb-2">3. Features Derivadas</span>
+                                <p class="small text-muted mb-0">Cálculo de <code>digital_adoption_index</code>, <code>chia_sector_avg</code> y <code>gap_to_sector_avg</code> (brecha frente a Chía).</p>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="bg-light rounded-3 p-3 h-100 border">
+                                <span class="badge bg-brand mb-2">4. Escalado Z-Score</span>
+                                <p class="small text-muted mb-0">Aplicación de <code>StandardScaler</code> ($\mu=0, \sigma=1$) sobre los 8 parámetros de entrada del modelo.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- PASO 2 · LOS 8 PARÁMETROS DEL AUTODIAGNÓSTICO PYME -->
+        <div class="col-12 mt-4">
+            <div class="mb-4">
+                <span class="badge bg-primary bg-opacity-10 text-primary fs-6 px-3 py-2 mb-2">Variables de Entrada (8 Features)</span>
+                <h2 class="h3 fw-bold">Explicación de los 8 Parámetros Modificables en el Autodiagnóstico Pyme</h2>
+                <p class="text-muted">
+                    En el módulo interactivo de <strong>Autodiagnóstico Pyme</strong>, el empresario o analista puede ajustar
+                    cada uno de estos 8 indicadores en una escala de <strong>0 a 100 puntos</strong>. El sistema proyecta
+                    dichos valores mediante <code>StandardScaler → PCA (2 componentes) → K-Means (K=4)</code> para diagnosticar
+                    el nivel de madurez digital y riesgo competitivo de la empresa.
+                </p>
+            </div>
+
+            <div class="row g-4">
+
+                <!-- PARÁMETRO 1 -->
+                <div class="col-md-6">
+                    <div class="card border-0 shadow-sm h-100">
+                        <div class="card-body p-4 d-flex flex-column">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <span class="badge bg-brand">Parámetro 1 / 8</span>
+                                <code>puntaje_conectividad</code>
+                            </div>
+                            <h4 class="fw-bold">1. Puntaje de Conectividad Digital</h4>
+                            <p class="text-muted small">
+                                Evalúa la calidad, estabilidad y velocidad del acceso a Internet empresarial (fibra óptica,
+                                ancho de banda dedicado, cobertura en sede urbana o rural y continuidad operativa de red).
+                            </p>
+                            <ul class="small text-muted mb-3">
+                                <li><strong>Escala:</strong> 0 a 100 puntos (Media Sabana Centro 2026: 54,1).</li>
+                                <li><strong>Impacto en PCA:</strong> Carga positiva en <strong>PC1 (+0,351)</strong> y fuerte peso en <strong>PC2 (+0,455)</strong> como habilitador base de infraestructura.</li>
+                            </ul>
+                            <div class="mt-auto text-center bg-light rounded-3 p-2 border">
+                                <img src="{{ url_for('static', filename='img/autodiagnostico/param_1.png') }}"
+                                     alt="Parámetro 1: Puntaje de Conectividad Digital"
+                                     class="img-fluid rounded-2">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- PARÁMETRO 2 -->
+                <div class="col-md-6">
+                    <div class="card border-0 shadow-sm h-100">
+                        <div class="card-body p-4 d-flex flex-column">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <span class="badge bg-brand">Parámetro 2 / 8</span>
+                                <code>puntaje_presencia_digital</code>
+                            </div>
+                            <h4 class="fw-bold">2. Puntaje de Presencia Digital</h4>
+                            <p class="text-muted small">
+                                Mide la visibilidad y posicionamiento de la empresa en ecosistemas digitales: sitio web propio
+                                actualizado, perfiles comerciales activos, catálogos en línea y estrategias de captación digital.
+                            </p>
+                            <ul class="small text-muted mb-3">
+                                <li><strong>Escala:</strong> 0 a 100 puntos.</li>
+                                <li><strong>Impacto en PCA:</strong> Carga en <strong>PC1 (+0,349)</strong> y mayor peso positivo en <strong>PC2 (+0,563)</strong>, diferenciando empresas visibles frente a negocios puramente locales.</li>
+                            </ul>
+                            <div class="mt-auto text-center bg-light rounded-3 p-2 border">
+                                <img src="{{ url_for('static', filename='img/autodiagnostico/param_2.png') }}"
+                                     alt="Parámetro 2: Puntaje de Presencia Digital"
+                                     class="img-fluid rounded-2">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- PARÁMETRO 3 -->
+                <div class="col-md-6">
+                    <div class="card border-0 shadow-sm h-100">
+                        <div class="card-body p-4 d-flex flex-column">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <span class="badge bg-brand">Parámetro 3 / 8</span>
+                                <code>puntaje_comercio_electronico</code>
+                            </div>
+                            <h4 class="fw-bold">3. Puntaje de Comercio Electrónico</h4>
+                            <p class="text-muted small">
+                                Cuantifica la capacidad transaccional de la Pyme: ventas a través de canales digitales,
+                                integración de pasarelas de pago electrónico, pedidos en línea y logística de despacho digital.
+                            </p>
+                            <ul class="small text-muted mb-3">
+                                <li><strong>Escala:</strong> 0 a 100 puntos (uno de los mayores rezagos en Chía, con solo 22,19 % de ventas digitales).</li>
+                                <li><strong>Impacto en PCA:</strong> Alta contribución directa a <strong>PC1 (+0,354)</strong>, impulsando el salto hacia los clústeres de consolidación y liderazgo.</li>
+                            </ul>
+                            <div class="mt-auto text-center bg-light rounded-3 p-2 border">
+                                <img src="{{ url_for('static', filename='img/autodiagnostico/param_3.png') }}"
+                                     alt="Parámetro 3: Puntaje de Comercio Electrónico"
+                                     class="img-fluid rounded-2">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- PARÁMETRO 4 -->
+                <div class="col-md-6">
+                    <div class="card border-0 shadow-sm h-100">
+                        <div class="card-body p-4 d-flex flex-column">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <span class="badge bg-brand">Parámetro 4 / 8</span>
+                                <code>puntaje_gestion_interna_tic</code>
+                            </div>
+                            <h4 class="fw-bold">4. Puntaje de Gestión Interna TIC</h4>
+                            <p class="text-muted small">
+                                Evalúa la digitalización de procesos administrativos y operativos internos: uso de software ERP/CRM,
+                                facturación electrónica, automatización de inventarios y herramientas colaborativas en la nube.
+                            </p>
+                            <ul class="small text-muted mb-3">
+                                <li><strong>Escala:</strong> 0 a 100 puntos.</li>
+                                <li><strong>Impacto en PCA:</strong> Carga de <strong>+0,353 en PC1</strong> y <strong>-0,411 en PC2</strong>, reflejando sofisticación operativa interna frente a exposición comercial externa.</li>
+                            </ul>
+                            <div class="mt-auto text-center bg-light rounded-3 p-2 border">
+                                <img src="{{ url_for('static', filename='img/autodiagnostico/param_4.png') }}"
+                                     alt="Parámetro 4: Puntaje de Gestión Interna TIC"
+                                     class="img-fluid rounded-2">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- PARÁMETRO 5 -->
+                <div class="col-md-6">
+                    <div class="card border-0 shadow-sm h-100">
+                        <div class="card-body p-4 d-flex flex-column">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <span class="badge bg-brand">Parámetro 5 / 8</span>
+                                <code>puntaje_ciberseguridad</code>
+                            </div>
+                            <h4 class="fw-bold">5. Puntaje de Ciberseguridad</h4>
+                            <p class="text-muted small">
+                                Mide el grado de protección de activos digitales y datos de clientes: políticas de respaldo (backups),
+                                control de accesos, autenticación segura, protección contra malware y cumplimiento de privacidad.
+                            </p>
+                            <ul class="small text-muted mb-3">
+                                <li><strong>Escala:</strong> 0 a 100 puntos (suele ser el pilar con menor puntaje en microempresas).</li>
+                                <li><strong>Impacto en PCA:</strong> Carga de <strong>+0,353 en PC1</strong> y <strong>-0,475 en PC2</strong>, marcando la madurez institucional en gobernanza de riesgos.</li>
+                            </ul>
+                            <div class="mt-auto text-center bg-light rounded-3 p-2 border">
+                                <img src="{{ url_for('static', filename='img/autodiagnostico/param_5.png') }}"
+                                     alt="Parámetro 5: Puntaje de Ciberseguridad"
+                                     class="img-fluid rounded-2">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- PARÁMETRO 6 -->
+                <div class="col-md-6">
+                    <div class="card border-0 shadow-sm h-100">
+                        <div class="card-body p-4 d-flex flex-column">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <span class="badge bg-brand">Parámetro 6 / 8</span>
+                                <code>puntaje_capacitacion_digital</code>
+                            </div>
+                            <h4 class="fw-bold">6. Puntaje de Capacitación y Talento Digital</h4>
+                            <p class="text-muted small">
+                                Evalúa las competencias digitales del equipo humano y la frecuencia de formación en herramientas
+                                tecnológicas, analítica básica, marketing digital y cultura de innovación organizacional.
+                            </p>
+                            <ul class="small text-muted mb-3">
+                                <li><strong>Escala:</strong> 0 a 100 puntos.</li>
+                                <li><strong>Impacto en PCA:</strong> Segunda mayor carga positiva en <strong>PC1 (+0,353)</strong>; sin talento capacitado, la inversión en infraestructura pierde efectividad.</li>
+                            </ul>
+                            <div class="mt-auto text-center bg-light rounded-3 p-2 border">
+                                <img src="{{ url_for('static', filename='img/autodiagnostico/param_6.png') }}"
+                                     alt="Parámetro 6: Puntaje de Capacitación Digital"
+                                     class="img-fluid rounded-2">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- PARÁMETRO 7 -->
+                <div class="col-md-6">
+                    <div class="card border-0 shadow-sm h-100">
+                        <div class="card-body p-4 d-flex flex-column">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <span class="badge bg-primary">Parámetro 7 / 8</span>
+                                <code>indice_madurez_digital</code>
+                            </div>
+                            <h4 class="fw-bold">7. Índice de Madurez Digital</h4>
+                            <p class="text-muted small">
+                                Indicador compuesto que sintetiza el nivel global de apropiación tecnológica de la empresa en
+                                sus seis pilares operativos, permitiendo compararla directamente contra la media de su sector en Chía.
+                            </p>
+                            <ul class="small text-muted mb-3">
+                                <li><strong>Escala:</strong> 0 a 100 puntos (Promedio en Chía 2026: <strong>33,78</strong> vs. Sabana Centro: 50,36).</li>
+                                <li><strong>Impacto en PCA:</strong> Posee la mayor carga positiva en <strong>PC1 (+0,363)</strong>, actuando como eje vertebrador de la clasificación.</li>
+                            </ul>
+                            <div class="mt-auto text-center bg-light rounded-3 p-2 border">
+                                <img src="{{ url_for('static', filename='img/autodiagnostico/param_7.png') }}"
+                                     alt="Parámetro 7: Índice de Madurez Digital"
+                                     class="img-fluid rounded-2">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- PARÁMETRO 8 -->
+                <div class="col-md-6">
+                    <div class="card border-0 shadow-sm h-100">
+                        <div class="card-body p-4 d-flex flex-column">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <span class="badge bg-primary">Parámetro 8 / 8</span>
+                                <code>indice_competitividad</code>
+                            </div>
+                            <h4 class="fw-bold">8. Índice de Competitividad Empresarial</h4>
+                            <p class="text-muted small">
+                                Mide el desempeño económico y posicionamiento de mercado de la empresa (productividad, retención
+                                de clientes, diversificación de ingresos y capacidad de respuesta frente a competidores regionales).
+                            </p>
+                            <ul class="small text-muted mb-3">
+                                <li><strong>Escala:</strong> 0 a 100 puntos (Promedio en Chía 2026: <strong>41,78</strong> vs. Tocancipá: 66,15).</li>
+                                <li><strong>Impacto en PCA:</strong> Carga positiva en <strong>PC1 (+0,353)</strong> y <strong>PC2 (+0,068)</strong>, vinculando la transformación digital con resultados reales de negocio.</li>
+                            </ul>
+                            <div class="mt-auto text-center bg-light rounded-3 p-2 border">
+                                <img src="{{ url_for('static', filename='img/autodiagnostico/param_8.png') }}"
+                                     alt="Parámetro 8: Índice de Competitividad Empresarial"
+                                     class="img-fluid rounded-2">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- PARÁMETROS DE INFRAESTRUCTURA Y TRANSMISIÓN DE DATOS -->
+        <div class="col-12 mt-4">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body p-4">
+                    <div class="d-flex align-items-center gap-3 mb-3">
+                        <span class="badge bg-brand fs-6 px-3 py-2">Extensión de red</span>
+                        <h2 class="h4 fw-bold mb-0">Índice de Madurez de Red y Conectividad (Supuesto Heurístico de Diseño)</h2>
+                    </div>
+                    <p class="text-muted">
+                        <strong>Transparencia metodológica:</strong> {{ network_methodology.justificacion }}
+                    </p>
+                    <p class="text-muted">
+                        {{ network_methodology.interaccion_modelo }}
+                    </p>
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead><tr><th>Parámetro</th><th>Tipo de entrada</th><th>Peso heurístico asignado</th></tr></thead>
+                            <tbody>
+                                <tr><td>Medio de transmisión principal (FTTH, radioenlace, 4G/5G FWA, cobre/ADSL)</td><td>Selector</td><td>25 %</td></tr>
+                                <tr><td>Capacidad del canal: ancho de banda de subida / bajada (Mbps)</td><td>Numérico</td><td>20 % (subida pesa 60 %)</td></tr>
+                                <tr><td>Latencia promedio estimada (ms)</td><td>Numérico</td><td>15 %</td></tr>
+                                <tr><td>Segmentación mediante VLANs (Wi-Fi de invitados vs. caja/POS)</td><td>Interruptor</td><td>15 %</td></tr>
+                                <tr><td>Cifrado de transporte activo (HTTPS / TLS 1.3)</td><td>Interruptor</td><td>15 %</td></tr>
+                                <tr><td>Enlace de respaldo (<em>failover</em> / redundancia)</td><td>Interruptor</td><td>10 %</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ARQUITECTURA DE RED Y FLUJO DE COMUNICACIÓN DEL SISTEMA -->
+        <div class="col-12 mt-4">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body p-4">
+                    <div class="d-flex align-items-center gap-3 mb-3">
+                        <span class="badge bg-brand fs-6 px-3 py-2">Plataforma</span>
+                        <h2 class="h4 fw-bold mb-0">Arquitectura de Red y Flujo de Comunicación del Sistema</h2>
+                    </div>
+                    <div class="row g-3">
+                        <div class="col-lg-4">
+                            <div class="arch-box h-100">
+                                <div class="arch-title"><i class="bi bi-hdd-network text-accent me-1"></i> Pila de protocolos</div>
+                                <ul>
+                                    <li><strong>Aplicación:</strong> HTTP/1.1 sobre TLS (HTTPS) con API REST de Flask y API transaccional de Brevo.</li>
+                                    <li><strong>Transporte:</strong> TCP con cifrado TLS terminado en el balanceador de Render.</li>
+                                    <li><strong>Red / Enlace:</strong> IP sobre el acceso del usuario (fibra, radioenlace o red móvil).</li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="col-lg-4">
+                            <div class="arch-box h-100">
+                                <div class="arch-title"><i class="bi bi-braces text-accent me-1"></i> Payloads JSON y envío asíncrono</div>
+                                <ul>
+                                    <li><code>POST /pca-predict</code> recibe las 8 variables del modelo + 7 parámetros de red y responde el diagnóstico en JSON.</li>
+                                    <li><code>POST /enviar-informe</code> y <code>POST /enviar-alerta</code> validan el correo, aplican <em>rate limiting</em>, lanzan un hilo secundario y responden <code>HTTP 202 Accepted</code>.</li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="col-lg-4">
+                            <div class="arch-box h-100">
+                                <div class="arch-title"><i class="bi bi-speedometer2 text-accent me-1"></i> Alcance de la telemetría</div>
+                                <ul>
+                                    <li>El navegador mide el <strong>RTT</strong> con <code>performance.now()</code> y lo compara con <code>server_ms</code>.</li>
+                                    <li><strong>Nota de alcance:</strong> esta telemetría mide la conexión de sesión entre el navegador del usuario y Render como demostración práctica; no audita la red LAN interna de la empresa.</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- RESUMEN DE SALIDA -->
+        <div class="col-12 mt-4">
+            <div class="card border-0 shadow-sm bg-brand bg-opacity-10">
+                <div class="card-body p-4">
+                    <h2 class="h4 fw-bold mb-3">Salida del Pipeline de Ingeniería</h2>
+                    <div class="row g-3 text-center">
+                        <div class="col-6 col-md-3">
+                            <p class="display-6 fw-bold text-accent mb-0">1.360</p>
+                            <p class="small text-muted mb-0">Empresas procesadas (2026)</p>
+                        </div>
+                        <div class="col-6 col-md-3">
+                            <p class="display-6 fw-bold text-accent mb-0">280</p>
+                            <p class="small text-muted mb-0">Empresas de Chía</p>
+                        </div>
+                        <div class="col-6 col-md-3">
+                            <p class="display-6 fw-bold text-accent mb-0">8</p>
+                            <p class="small text-muted mb-0">Parámetros del simulador</p>
+                        </div>
+                        <div class="col-6 col-md-3">
+                            <p class="display-6 fw-bold text-accent mb-0">Z-Score</p>
+                            <p class="small text-muted mb-0">Matriz <code>X_scaled</code> lista</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+{% endblock %}
+
+

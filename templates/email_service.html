@@ -1,0 +1,698 @@
+{% extends "base.html" %}
+
+{% block title %}Envío de Correos y Reportes · DigitalFriction Chía{% endblock %}
+
+{% block content %}
+<style>
+  .df-email-page {
+    --df-navy: #0b3b8c;
+    --df-navy-dark: #082c6c;
+    --df-cyan: #00acc1;
+    --df-cyan-light: #22d3ee;
+    --df-cyan-soft: #e0f7fa;
+    --df-blue-soft: #e8f1ff;
+    --df-blue-border: #bfdbfe;
+    --df-bg: #f4f7fb;
+    --df-card: #ffffff;
+    --df-border: #e2e8f0;
+    --df-text: #0f172a;
+    --df-muted: #475569;
+    --df-green: #15803d;
+    --df-green-bg: #dcfce7;
+    --df-red: #dc2626;
+    --df-red-hover: #b91c1c;
+    --df-red-bg: #fef2f2;
+    --df-red-border: #fecaca;
+    background-color: var(--df-bg);
+    color: var(--df-text);
+    padding-bottom: 3.5rem;
+  }
+
+  /* Banner superior del apartado (misma paleta azul rey + cian del sitio) */
+  .df-email-page .df-section-banner {
+    background: linear-gradient(135deg, #0b3b8c 0%, #0e4da4 65%, #0a6c9c 100%);
+    color: #ffffff;
+    padding: 2.4rem 1.5rem;
+    border-bottom: 3px solid var(--df-cyan);
+    margin-bottom: 2rem;
+  }
+
+  .df-email-page .df-wrap {
+    max-width: 1180px;
+    margin: 0 auto;
+    padding: 0 1rem;
+  }
+
+  .df-email-page .df-banner-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(34, 211, 238, 0.16);
+    border: 1px solid rgba(34, 211, 238, 0.45);
+    color: #cffafe;
+    font-size: 0.8rem;
+    font-weight: 600;
+    padding: 5px 14px;
+    border-radius: 999px;
+    margin-bottom: 0.85rem;
+  }
+
+  .df-email-page .df-banner-title {
+    margin: 0 0 0.5rem 0;
+    font-size: 1.85rem;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    color: #ffffff;
+  }
+
+  .df-email-page .df-banner-title span {
+    color: var(--df-cyan-light);
+  }
+
+  .df-email-page .df-banner-desc {
+    margin: 0;
+    max-width: 820px;
+    font-size: 0.97rem;
+    color: #e0f2fe;
+    line-height: 1.55;
+  }
+
+  /* Tarjetas principales */
+  .df-email-page .df-card {
+    background: var(--df-card);
+    border: 1px solid var(--df-border);
+    border-radius: 14px;
+    padding: 1.75rem 2rem;
+    margin-bottom: 1.5rem;
+    box-shadow: 0 2px 8px rgba(11, 59, 140, 0.04);
+  }
+
+  .df-email-page .df-pill-soft {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: var(--df-blue-soft);
+    color: var(--df-navy);
+    font-size: 0.8rem;
+    font-weight: 600;
+    padding: 5px 13px;
+    border-radius: 999px;
+    margin-bottom: 0.75rem;
+  }
+
+  .df-email-page .df-card-title {
+    margin: 0 0 0.5rem 0;
+    font-size: 1.35rem;
+    font-weight: 700;
+    color: var(--df-text);
+  }
+
+  .df-email-page .df-card-subtitle {
+    margin: 0;
+    font-size: 0.93rem;
+    color: var(--df-muted);
+    line-height: 1.55;
+  }
+
+  /* Grid de 2 columnas para consola de envío */
+  .df-email-page .df-dispatch-grid {
+    display: grid;
+    grid-template-columns: 1.05fr 1fr;
+    gap: 2rem;
+    align-items: start;
+  }
+
+  @media (max-width: 920px) {
+    .df-email-page .df-dispatch-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .df-email-page .df-info-panel {
+    background: #f8fafc;
+    border: 1px solid var(--df-border);
+    border-left: 4px solid var(--df-cyan);
+    border-radius: 10px;
+    padding: 1rem 1.15rem;
+    margin-top: 1rem;
+    font-size: 0.88rem;
+    color: var(--df-muted);
+    line-height: 1.6;
+  }
+
+  .df-email-page .df-info-panel strong {
+    color: var(--df-text);
+  }
+
+  .df-email-page .df-status-bar {
+    margin-top: 1.1rem;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.87rem;
+    color: var(--df-muted);
+  }
+
+  .df-email-page .df-badge-green {
+    background: var(--df-green);
+    color: #ffffff;
+    font-weight: 600;
+    font-size: 0.78rem;
+    padding: 4px 11px;
+    border-radius: 999px;
+    display: inline-block;
+  }
+
+  .df-email-page .df-badge-warn {
+    background: #d97706;
+    color: #ffffff;
+    font-weight: 600;
+    font-size: 0.78rem;
+    padding: 4px 11px;
+    border-radius: 999px;
+    display: inline-block;
+  }
+
+  .df-email-page .df-badge-red {
+    background: var(--df-red);
+    color: #ffffff;
+    font-weight: 600;
+    font-size: 0.78rem;
+    padding: 4px 11px;
+    border-radius: 999px;
+    display: inline-block;
+  }
+
+  .df-email-page .df-link {
+    color: var(--df-navy);
+    font-weight: 600;
+    text-decoration: underline;
+  }
+
+  /* Formulario y botones */
+  .df-email-page .df-form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 12px;
+  }
+
+  @media (max-width: 560px) {
+    .df-email-page .df-form-row {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .df-email-page .df-form-group {
+    margin-bottom: 14px;
+  }
+
+  .df-email-page .df-label {
+    display: block;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--df-text);
+    margin-bottom: 5px;
+  }
+
+  .df-email-page .df-input,
+  .df-email-page .df-select {
+    width: 100%;
+    padding: 9px 12px;
+    border: 1px solid #cbd5e1;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    color: var(--df-text);
+    background: #ffffff;
+  }
+
+  .df-email-page .df-input:focus,
+  .df-email-page .df-select:focus {
+    outline: none;
+    border-color: var(--df-navy);
+    box-shadow: 0 0 0 3px rgba(11, 59, 140, 0.12);
+  }
+
+  .df-email-page .df-btn-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 14px;
+  }
+
+  .df-email-page .df-btn {
+    cursor: pointer;
+    font-size: 0.88rem;
+    font-weight: 600;
+    padding: 9px 16px;
+    border-radius: 8px;
+    border: 1px solid transparent;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    transition: all 0.15s ease;
+  }
+
+  .df-email-page .df-btn-primary {
+    background: var(--df-navy);
+    color: #ffffff;
+  }
+
+  .df-email-page .df-btn-primary:hover {
+    background: var(--df-navy-dark);
+  }
+
+  .df-email-page .df-btn-danger {
+    background: var(--df-red);
+    color: #ffffff;
+  }
+
+  .df-email-page .df-btn-danger:hover {
+    background: var(--df-red-hover);
+  }
+
+  .df-email-page .df-btn-outline {
+    background: #ffffff;
+    color: var(--df-navy);
+    border-color: var(--df-blue-border);
+  }
+
+  .df-email-page .df-btn-outline:hover {
+    background: var(--df-blue-soft);
+  }
+
+  .df-email-page .df-btn-sm {
+    padding: 6px 12px;
+    font-size: 0.82rem;
+  }
+
+  /* Caja de telemetría */
+  .df-email-page .df-telemetry {
+    background: #f8fafc;
+    border: 1px solid var(--df-border);
+    border-radius: 10px;
+    padding: 14px 16px;
+    font-size: 0.85rem;
+  }
+
+  .df-email-page .df-telemetry-line {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 6px;
+    color: var(--df-muted);
+  }
+
+  .df-email-page .df-mono {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    font-size: 0.83rem;
+    color: var(--df-text);
+  }
+
+  /* Tarjetas de arquitectura en 4 pasos */
+  .df-email-page .df-steps-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 14px;
+    margin-top: 1.25rem;
+  }
+
+  @media (max-width: 960px) {
+    .df-email-page .df-steps-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  @media (max-width: 560px) {
+    .df-email-page .df-steps-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .df-email-page .df-step-box {
+    background: #f8fafc;
+    border: 1px solid var(--df-border);
+    border-top: 3px solid var(--df-navy);
+    border-radius: 10px;
+    padding: 15px 16px;
+  }
+
+  .df-email-page .df-step-tag {
+    font-size: 0.74rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: var(--df-cyan);
+    margin-bottom: 4px;
+    letter-spacing: 0.04em;
+  }
+
+  .df-email-page .df-step-title {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: var(--df-text);
+    margin: 0 0 6px 0;
+  }
+
+  .df-email-page .df-step-text {
+    font-size: 0.83rem;
+    color: var(--df-muted);
+    margin: 0;
+    line-height: 1.5;
+  }
+
+  /* Tabla de auditoría */
+  .df-email-page .df-table-wrap {
+    overflow-x: auto;
+    margin-top: 14px;
+  }
+
+  .df-email-page .df-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.84rem;
+  }
+
+  .df-email-page .df-table th,
+  .df-email-page .df-table td {
+    text-align: left;
+    padding: 10px 12px;
+    border-bottom: 1px solid var(--df-border);
+  }
+
+  .df-email-page .df-table th {
+    background: #f8fafc;
+    color: var(--df-muted);
+    font-weight: 700;
+    font-size: 0.77rem;
+    text-transform: uppercase;
+  }
+
+  .df-email-page .df-warn-box {
+    margin-top: 12px;
+    padding: 10px 14px;
+    border-radius: 8px;
+    font-size: 0.84rem;
+    background: #fffbeb;
+    border: 1px solid #fde68a;
+    color: #92400e;
+  }
+</style>
+
+<div class="df-email-page">
+  <!-- Banner superior consistente con los demás apartados -->
+  <section class="df-section-banner">
+    <div class="df-wrap">
+      <div class="df-banner-pill">Servicio Transaccional · API REST Brevo v3</div>
+      <h1 class="df-banner-title">Envío de <span>Diagnósticos y Alertas</span> Empresariales</h1>
+      <p class="df-banner-desc">
+        Distribuye de forma automática y asíncrona los resultados del observatorio empresarial de Chía directamente al correo electrónico registrado, incluyendo el Semáforo de Red, la arquitectura recomendada y los canales institucionales de apoyo.
+      </p>
+    </div>
+  </section>
+
+  <div class="df-wrap">
+    <!-- Tarjeta principal de envío -->
+    <section class="df-card">
+      <div class="df-dispatch-grid">
+        <!-- Columna izquierda: Explicación funcional -->
+        <div>
+          <div class="df-pill-soft">Comunicación Transaccional · API REST Brevo</div>
+          <h2 class="df-card-title">Recibe este Diagnóstico Completo en tu Correo</h2>
+          <p class="df-card-subtitle">
+            Te enviamos un informe ejecutivo con tu perfil sectorial en Chía, el <strong>Semáforo de Red</strong>, la arquitectura recomendada y los contactos de <strong>CCB, SENA y MinTIC</strong>.
+          </p>
+
+          <div class="df-info-panel">
+            <strong>Modalidades de despacho disponibles:</strong><br>
+            • <strong>Informe Completo:</strong> Documento ejecutivo con puntajes de madurez digital, competitividad, topología de red sugerida y plan de acción.<br>
+            • <strong>Alerta Crítica:</strong> Notificación prioritaria ante cuellos de botella de conectividad y recomendaciones inmediatas de continuidad operativa.
+          </div>
+
+          <div class="df-status-bar">
+            <span>Estado del servicio:</span>
+            {% set sender_txt = email_cfg.get('sender_masked') or email_cfg.get('sender') or 'No configurado' if email_cfg is mapping else 'No configurado' %}
+            {% if email_cfg is mapping and email_cfg.get('configured') %}
+              <span class="df-badge-green">Brevo activo ({{ sender_txt }})</span>
+            {% else %}
+              <span class="df-badge-warn">Credenciales .env pendientes</span>
+            {% endif %}
+            <span>·</span>
+            <a href="/pca-prediction" class="df-link">Ir al Autodiagnóstico PyME</a>
+          </div>
+
+          {% if email_cfg is mapping and email_cfg.get('warnings') %}
+            {% for w in email_cfg.get('warnings') %}
+              <div class="df-warn-box">{{ w }}</div>
+            {% endfor %}
+          {% endif %}
+        </div>
+
+        <!-- Columna derecha: Formulario y telemetría -->
+        <div>
+          <div class="df-form-row">
+            <div>
+              <label class="df-label" for="empresaNombre">Nombre de tu empresa</label>
+              <input class="df-input" type="text" id="empresaNombre" placeholder="Ej. Azúcar Manuelita" value="Mi Empresa en Chía">
+            </div>
+            <div>
+              <label class="df-label" for="empresaEmail">Correo electrónico</label>
+              <input class="df-input" type="email" id="empresaEmail" placeholder="gerencia@tuempresa.com">
+            </div>
+          </div>
+
+          <div class="df-form-group">
+            <label class="df-label" for="empresaSector">Sector económico en Chía</label>
+            <select class="df-select" id="empresaSector">
+              {% for sec in sectors %}
+                <option value="{{ sec }}">{{ sec }}</option>
+              {% endfor %}
+            </select>
+          </div>
+
+          <div class="df-btn-row">
+            <button type="button" class="df-btn df-btn-primary" onclick="dispararCorreo('/enviar-informe')">
+              Enviar Informe Completo
+            </button>
+            <button type="button" class="df-btn df-btn-danger" onclick="dispararCorreo('/enviar-alerta')">
+              Enviar Alerta Crítica
+            </button>
+            <button type="button" class="df-btn df-btn-outline" onclick="previsualizar('informe')">
+              Vista Previa
+            </button>
+          </div>
+
+          <div class="df-telemetry">
+            <div class="df-telemetry-line">
+              <span>Estado de envío:</span>
+              <span id="statusBadge" class="df-badge-green">Listo para enviar</span>
+            </div>
+            <div class="df-telemetry-line">
+              <span>Telemetría (RTT / Servidor):</span>
+              <span id="telemetryText" class="df-mono">-- ms / -- ms</span>
+            </div>
+            <div id="feedbackMsg" style="color: var(--df-muted); font-size: 0.83rem; margin-top: 6px;">
+              Registra un correo electrónico válido para despachar el reporte en segundo plano.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Vista previa embebida -->
+      <div id="previewContainer" style="display: none; margin-top: 1.5rem; border-top: 1px solid var(--df-border); padding-top: 1.25rem;">
+        <div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 10px; margin-bottom: 10px;">
+          <strong style="font-size: 0.92rem; color: var(--df-navy);">Vista previa del correo electrónico</strong>
+          <div style="display: flex; gap: 8px;">
+            <button type="button" class="df-btn df-btn-outline df-btn-sm" onclick="previsualizar('informe')">Ver Informe</button>
+            <button type="button" class="df-btn df-btn-outline df-btn-sm" onclick="previsualizar('alerta')">Ver Alerta</button>
+            <button type="button" class="df-btn df-btn-outline df-btn-sm" onclick="document.getElementById('previewContainer').style.display='none'">Cerrar</button>
+          </div>
+        </div>
+        <iframe id="previewFrame" style="width: 100%; height: 440px; border: 1px solid var(--df-border); border-radius: 10px; background: #ffffff;"></iframe>
+      </div>
+    </section>
+
+    <!-- Explicación de la arquitectura de envío -->
+    <section class="df-card">
+      <h2 class="df-card-title" style="font-size: 1.15rem;">Arquitectura del Servicio de Correo</h2>
+      <p class="df-card-subtitle">
+        El envío opera mediante una cola asíncrona que desacopla la evaluación del modelo predictivo de la entrega SMTP/API externa.
+      </p>
+
+      <div class="df-steps-grid">
+        <div class="df-step-box">
+          <div class="df-step-tag">1 · Validación</div>
+          <h3 class="df-step-title">Control de Acceso y Cuota</h3>
+          <p class="df-step-text">
+            Verifica la sintaxis del correo destino y aplica límite de envíos por sesión e IP para proteger la cuota transaccional.
+          </p>
+        </div>
+        <div class="df-step-box">
+          <div class="df-step-tag">2 · Inferencia ML</div>
+          <h3 class="df-step-title">Diagnóstico y Plantilla</h3>
+          <p class="df-step-text">
+            Evalúa el perfil sectorial (PCA / K-Means), calcula el Semáforo de Red y renderiza el informe HTML con estilos compatibles.
+          </p>
+        </div>
+        <div class="df-step-box">
+          <div class="df-step-tag">3 · Asíncrono</div>
+          <h3 class="df-step-title">Cola HTTP 202 Accepted</h3>
+          <p class="df-step-text">
+            Flask delega el despacho a un hilo en segundo plano y responde al instante sin congelar la navegación del usuario.
+          </p>
+        </div>
+        <div class="df-step-box">
+          <div class="df-step-tag">4 · Entrega API</div>
+          <h3 class="df-step-title">Brevo REST v3 (HTTP 201)</h3>
+          <p class="df-step-text">
+            Transmite el correo cifrado por HTTPS hacia Brevo y audita el código HTTP final y la latencia real en milisegundos.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Historial de envíos -->
+    <section class="df-card">
+      <div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 12px;">
+        <div>
+          <h2 class="df-card-title" style="font-size: 1.15rem;">Historial y Telemetría de Envíos</h2>
+          <p class="df-card-subtitle" style="font-size: 0.85rem;">
+            Confirmación real devuelta por Brevo (<strong>HTTP 201</strong> indica entrega aceptada hacia la bandeja destino).
+          </p>
+        </div>
+        <button type="button" class="df-btn df-btn-outline df-btn-sm" onclick="refrescarHistorial()">Actualizar</button>
+      </div>
+
+      <div id="historialBody" class="df-table-wrap">
+        {% if history and history|length > 0 %}
+          <table class="df-table">
+            <thead>
+              <tr>
+                <th>Fecha (UTC)</th>
+                <th>Destinatario</th>
+                <th>Tipo</th>
+                <th>Estado</th>
+                <th>HTTP</th>
+                <th>Latencia</th>
+                <th>Detalle</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for row in history %}
+                <tr>
+                  <td class="df-mono">{{ row.timestamp }}</td>
+                  <td class="df-mono">{{ row.destinatario }}</td>
+                  <td>{{ row.tipo }}</td>
+                  <td>{{ row.estado }}</td>
+                  <td>
+                    <span class="{{ 'df-badge-green' if row.http_code in [200, 201, 202] else 'df-badge-red' }}">
+                      {{ row.http_code }}
+                    </span>
+                  </td>
+                  <td class="df-mono">{{ row.latency_ms }} ms</td>
+                  <td class="df-mono" style="max-width: 280px; word-break: break-word;">{{ row.detalle }}</td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        {% else %}
+          <p style="color: var(--df-muted); font-size: 0.88rem; margin: 14px 0 0 0;">
+            Aún no se han registrado envíos en la sesión actual.
+          </p>
+        {% endif %}
+      </div>
+    </section>
+  </div>
+</div>
+
+<script>
+  function obtenerPayload(tipo = 'informe') {
+    return {
+      nombre: document.getElementById('empresaNombre').value.trim(),
+      sector: document.getElementById('empresaSector').value,
+      email: document.getElementById('empresaEmail').value.trim(),
+      tipo: tipo
+    };
+  }
+
+  async function refrescarHistorial() {
+    try {
+      const res = await fetch('/email_service');
+      const html = await res.text();
+      const doc = new DOMParser().parseFromString(html, 'text/html');
+      const nuevo = doc.getElementById('historialBody');
+      if (nuevo) {
+        document.getElementById('historialBody').innerHTML = nuevo.innerHTML;
+      }
+    } catch (e) {
+      console.error('Error actualizando historial:', e);
+    }
+  }
+
+  async function dispararCorreo(endpoint) {
+    const t0 = performance.now();
+    const badge = document.getElementById('statusBadge');
+    const telemetry = document.getElementById('telemetryText');
+    const msg = document.getElementById('feedbackMsg');
+
+    badge.className = 'df-badge-warn';
+    badge.textContent = 'Encolando...';
+
+    const res = await fetch(endpoint, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(obtenerPayload())
+    });
+    const rtt = (performance.now() - t0).toFixed(1);
+    const data = await res.json();
+
+    telemetry.textContent = `${rtt} ms / ${data.server_ms ?? '--'} ms`;
+
+    if (res.ok || res.status === 202) {
+      badge.className = 'df-badge-green';
+      badge.textContent = `En cola · HTTP ${res.status} Accepted`;
+      const cupo = data.remaining !== undefined ? ` (Cupo restante en sesión/IP: ${data.remaining}).` : '';
+      msg.textContent = (data.mensaje || 'Correo en cola de envío.') + cupo;
+      setTimeout(refrescarHistorial, 2200);
+    } else {
+      badge.className = 'df-badge-red';
+      badge.textContent = `Error · HTTP ${res.status}`;
+      msg.textContent = data.error || data.mensaje || 'No se pudo procesar el envío.';
+    }
+
+    if (data.preview_html) {
+      document.getElementById('previewContainer').style.display = 'block';
+      document.getElementById('previewFrame').srcdoc = data.preview_html;
+    }
+  }
+
+  async function previsualizar(tipo) {
+    const t0 = performance.now();
+    const badge = document.getElementById('statusBadge');
+    const telemetry = document.getElementById('telemetryText');
+    const msg = document.getElementById('feedbackMsg');
+
+    const res = await fetch('/preview-correo', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(obtenerPayload(tipo))
+    });
+    const rtt = (performance.now() - t0).toFixed(1);
+    const data = await res.json();
+
+    telemetry.textContent = `${rtt} ms / ${data.server_ms ?? '--'} ms`;
+
+    if (res.ok && data.html) {
+      badge.className = 'df-badge-green';
+      badge.textContent = 'Vista previa lista';
+      msg.textContent = `Mostrando vista previa del ${tipo === 'alerta' ? 'mensaje de alerta crítica' : 'informe completo'}.`;
+      document.getElementById('previewContainer').style.display = 'block';
+      document.getElementById('previewFrame').srcdoc = data.html;
+    } else {
+      badge.className = 'df-badge-red';
+      badge.textContent = 'Error en vista previa';
+      msg.textContent = data.error || 'No se pudo generar la vista previa.';
+    }
+  }
+</script>
+{% endblock %}

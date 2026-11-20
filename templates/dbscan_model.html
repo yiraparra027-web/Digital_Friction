@@ -1,0 +1,276 @@
+{% extends 'base.html' %}
+{% block title %}Alertas de rezago crítico — Evaluación empresarial{% endblock %}
+
+{% block content %}
+
+<!-- ENCABEZADO -->
+<section class="py-5" style="background:linear-gradient(135deg,#0B3D91 0%,#1565C0 60%,#0B3D91 100%);color:#fff;">
+  <div class="container">
+    <div class="row align-items-center">
+      <div class="col-lg-8">
+        <span class="badge bg-brand px-3 py-2 mb-3 fs-6">Evaluación empresarial · Alertas de rezago crítico</span>
+        <h1 class="display-4 fw-bold mb-3">
+          Alertas de rezago crítico
+          <span style="color:#00ACC1;">Agrupamiento por densidad (DBSCAN)</span>
+        </h1>
+        <p class="lead opacity-75">
+          Agrupamiento espacial basado en densidad sobre el tejido empresarial de
+          <strong>Chía y Sabana Centro</strong> para identificar conglomerados naturales de madurez
+          digital y aislar empresas con rezago crítico atípico.
+        </p>
+      </div>
+      <div class="col-lg-4 mt-4 mt-lg-0">
+        <div class="row g-3">
+          <div class="col-6">
+            <div class="rounded-4 p-3 text-center" style="background:rgba(255,255,255,.08);">
+              <div class="fs-2 fw-bold text-accent">{{ results.total_entities }}</div>
+              <div class="small opacity-75">Empresas Analizadas</div>
+            </div>
+          </div>
+          <div class="col-6">
+            <div class="rounded-4 p-3 text-center" style="background:rgba(255,255,255,.08);">
+              <div class="fs-2 fw-bold text-accent">{{ results.n_clusters }}</div>
+              <div class="small opacity-75">Clústeres Detectados</div>
+            </div>
+          </div>
+          <div class="col-6">
+            <div class="rounded-4 p-3 text-center" style="background:rgba(255,255,255,.08);">
+              <div class="fs-2 fw-bold text-warning">{{ results.silhouette }}</div>
+              <div class="small opacity-75">Coef. de Silueta</div>
+            </div>
+          </div>
+          <div class="col-6">
+            <div class="rounded-4 p-3 text-center" style="background:rgba(255,255,255,.08);">
+              <div class="fs-2 fw-bold text-info">{{ results.noise_count }}</div>
+              <div class="small opacity-75">Casos Atípicos</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="container py-5">
+
+<!-- SECCIÓN 1 · PARTICIÓN Y VARIABLES -->
+<section class="mb-5">
+  <div class="d-flex align-items-center gap-3 mb-4">
+    <div class="rounded-circle d-flex align-items-center justify-content-center fw-bold text-white"
+         style="width:40px;height:40px;background:#0B3D91;font-size:1.1rem;">1</div>
+    <h2 class="fw-bold mb-0">Partición de Datos y Proyección Previa</h2>
+  </div>
+
+  <div class="row g-4">
+    <div class="col-lg-5">
+      <div class="card border-0 shadow-sm h-100 p-4">
+        <h5 class="fw-bold mb-3"><i class="bi bi-database me-2 text-accent"></i>Preparación de Variables</h5>
+        <p class="text-muted">
+          Se parte de los pilares digitales estandarizados en escala Z. Aunque DBSCAN es un algoritmo
+          no supervisado, los datos se dividen en <strong>80 % entrenamiento ({{ results.train_size }})</strong> y
+          <strong>20 % prueba ({{ results.test_size }})</strong> para verificar la estabilidad de las densidades detectadas.
+        </p>
+        <div class="mt-2">
+          <h6 class="fw-semibold">Pilares incorporados al modelo:</h6>
+          <ul class="text-muted small ps-3 mb-0">
+            {% for col in results.feature_cols %}
+            <li>{{ col }}</li>
+            {% endfor %}
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-lg-4">
+      <div class="card border-0 shadow-sm h-100 p-4 text-center">
+        <h5 class="fw-bold mb-3">Distribución Entrenamiento / Prueba</h5>
+        <canvas id="splitChart" style="max-height:200px;"></canvas>
+        <div class="row mt-3 text-center g-2">
+          <div class="col-6">
+            <div class="fw-bold fs-4 text-accent">{{ results.train_size }}</div>
+            <div class="small text-muted">Entrenamiento (80 %)</div>
+          </div>
+          <div class="col-6">
+            <div class="fw-bold fs-4 text-info">{{ results.test_size }}</div>
+            <div class="small text-muted">Prueba (20 %)</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-lg-3">
+      <div class="card border-0 shadow-sm h-100 p-4">
+        <h5 class="fw-bold mb-3"><i class="bi bi-arrows-angle-contract me-2 text-accent"></i>Proyección PCA 2D</h5>
+        <p class="text-muted small">Varianza explicada utilizada para proyectar las densidades empresariales:</p>
+        <div class="mt-3">
+          <div class="d-flex justify-content-between mb-1">
+            <span class="small">Componente CP1</span><span class="small fw-bold text-accent">{{ results.pca_variance[0] }}%</span>
+          </div>
+          <div class="progress mb-3" style="height:8px;">
+            <div class="progress-bar bg-brand" style="width:{{ results.pca_variance[0] }}%"></div>
+          </div>
+          <div class="d-flex justify-content-between mb-1">
+            <span class="small">Componente CP2</span><span class="small fw-bold text-info">{{ results.pca_variance[1] }}%</span>
+          </div>
+          <div class="progress mb-3" style="height:8px;">
+            <div class="progress-bar bg-info" style="width:15%"></div>
+          </div>
+          <div class="alert border-0 rounded-3 p-2 small mb-0" style="background:#F5F7FA;">
+            <i class="bi bi-info-circle me-1 text-accent"></i>
+            Permite delimitar regiones densas y detectar anomalías estratégicas.
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SECCIÓN 2 · HIPERPARÁMETROS -->
+<section class="mb-5">
+  <div class="d-flex align-items-center gap-3 mb-4">
+    <div class="rounded-circle d-flex align-items-center justify-content-center fw-bold text-white"
+         style="width:40px;height:40px;background:#0B3D91;font-size:1.1rem;">2</div>
+    <h2 class="fw-bold mb-0">Calibración del Radio (ε) y Densidad Mínima</h2>
+  </div>
+
+  <div class="row g-4">
+    <div class="col-lg-6">
+      <div class="card border-0 shadow-sm p-4 h-100">
+        <h5 class="fw-bold mb-1"><i class="bi bi-bezier2 me-2 text-accent"></i>Curva de Vecinos Más Cercanos (Método del Codo)</h5>
+        <p class="text-muted small mb-3">
+          Distancias ordenadas al quinto vecino más cercano. El punto de inflexión orienta la selección del radio de vecindad <strong>ε</strong>.
+        </p>
+        <img src="{{ url_for('static', filename='img/dbscan/kdist_elbow.png') }}"
+             alt="Curva de distancia a los 5 vecinos más cercanos"
+             class="img-fluid rounded-3 border mt-auto">
+      </div>
+    </div>
+
+    <div class="col-lg-6">
+      <div class="card border-0 shadow-sm p-4 h-100">
+        <h5 class="fw-bold mb-3"><i class="bi bi-trophy me-2 text-accent"></i>Parámetros Óptimos Seleccionados</h5>
+        <p class="text-muted small">
+          Exploración sistemática evaluando combinaciones de radio <strong>ε</strong> y mínimo de vecinos,
+          maximizando el Coeficiente de Silueta con proporción controlada de casos atípicos.
+        </p>
+        <div class="row g-3 mt-1">
+          <div class="col-6">
+            <div class="rounded-3 p-3 text-center border border-accent-subtle" style="background:#F5F7FA;">
+              <div class="text-muted small mb-1">Radio ε (épsilon)</div>
+              <div class="display-6 fw-bold text-accent">{{ results.best_eps }}</div>
+              <div class="text-muted small">Distancia máxima de vecindad</div>
+            </div>
+          </div>
+          <div class="col-6">
+            <div class="rounded-3 p-3 text-center border border-accent-subtle" style="background:#F5F7FA;">
+              <div class="text-muted small mb-1">Mínimo de muestras</div>
+              <div class="display-6 fw-bold text-accent">{{ results.best_min_samples }}</div>
+              <div class="text-muted small">Empresas por núcleo denso</div>
+            </div>
+          </div>
+        </div>
+        <div class="mt-4">
+          <h6 class="fw-semibold">Tipos de registros identificados por DBSCAN:</h6>
+          <ul class="text-muted small mb-0">
+            <li><strong>Punto núcleo:</strong> Reúne al menos {{ results.best_min_samples }} empresas dentro del radio {{ results.best_eps }}.</li>
+            <li><strong>Punto frontera:</strong> Está dentro del alcance de un punto núcleo, pero con menor densidad propia.</li>
+            <li><strong>Caso atípico (Ruido):</strong> Empresas aisladas que no pertenecen a ningún grupo denso y requieren atención focalizada.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SECCIÓN 3 · CONGLOMERADOS Y MAPA DE RIESGO -->
+<section class="mb-5">
+  <div class="d-flex align-items-center gap-3 mb-4">
+    <div class="rounded-circle d-flex align-items-center justify-content-center fw-bold text-white"
+         style="width:40px;height:40px;background:#0B3D91;font-size:1.1rem;">3</div>
+    <h2 class="fw-bold mb-0">Conglomerados Detectados y Mapa de Riesgo Digital</h2>
+  </div>
+
+  <div class="row g-4 mb-4">
+    <div class="col-lg-7">
+      <div class="card border-0 shadow-sm p-4 h-100">
+        <h5 class="fw-bold mb-2">
+          <i class="bi bi-scatter-chart me-2 text-accent"></i>Distribución Espacial de Conglomerados DBSCAN
+        </h5>
+        <p class="text-muted small mb-3">
+          Visualización de los grupos densos y de las empresas aisladas en Chía y Sabana Centro.
+        </p>
+        <img src="{{ url_for('static', filename='img/dbscan/dbscan_clusters_2d.png') }}"
+             alt="Conglomerados por densidad DBSCAN"
+             class="img-fluid rounded-3 border mt-auto">
+      </div>
+    </div>
+
+    <div class="col-lg-5">
+      <div class="card border-0 shadow-sm p-4 h-100">
+        <h5 class="fw-bold mb-3"><i class="bi bi-layers me-2 text-accent"></i>Perfiles Encontrados</h5>
+        {% for cp in results.cluster_profiles %}
+        <div class="rounded-3 p-3 mb-2 border" style="border-left:4px solid {{ '#C62828' if cp.risk == 'Alto' else ('#F9A825' if cp.risk == 'Medio' else ('#00897B' if cp.risk == 'Bajo' else '#B0BEC5')) }} !important;">
+          <div class="d-flex justify-content-between align-items-center mb-1">
+            <span class="fw-bold small">{{ cp.label }}</span>
+            <span class="badge bg-light text-dark border">{{ cp.size }} empresas</span>
+          </div>
+          <div class="small text-muted">
+            Nivel de riesgo: <strong>{{ cp.risk }}</strong> · Percentil sectorial medio: <strong>{{ cp.mean_pct }}</strong>
+          </div>
+        </div>
+        {% endfor %}
+        <img src="{{ url_for('static', filename='img/dbscan/dbscan_risk_municipality.png') }}"
+             alt="Madurez digital promedio por municipio"
+             class="img-fluid rounded-3 border mt-auto">
+      </div>
+    </div>
+  </div>
+
+  <div class="card border-0 shadow-sm p-4">
+    <h5 class="fw-bold mb-3"><i class="bi bi-geo-alt me-2 text-accent"></i>Distribución Territorial por Municipio (Sabana Centro)</h5>
+    <div class="table-responsive">
+      <table class="table table-sm table-hover align-middle mb-0">
+        <thead class="table-light">
+          <tr>
+            <th>Municipio</th>
+            <th class="text-center">Empresas</th>
+            <th class="text-center">Riesgo Dominante</th>
+            <th class="text-end">Madurez Digital Promedio</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for r in results.dept_table %}
+          <tr>
+            <td class="fw-semibold">{{ r.DEPARTAMENTO }}</td>
+            <td class="text-center">{{ r.count }}</td>
+            <td class="text-center">
+              <span class="badge bg-{{ 'danger' if r.dominant_risk == 'Alto' else ('warning text-dark' if r.dominant_risk == 'Medio' else ('success' if r.dominant_risk == 'Bajo' else 'secondary')) }}">
+                {{ r.dominant_risk }}
+              </span>
+            </td>
+            <td class="text-end">{{ "%.1f"|format(r.gd_mean) }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script>
+const dbscanData = {{ results | tojson }};
+new Chart(document.getElementById("splitChart"), {
+  type: "doughnut",
+  data: {
+    labels: ["Entrenamiento (80 %)", "Prueba (20 %)"],
+    datasets: [{ data: [dbscanData.train_size, dbscanData.test_size], backgroundColor: ["#00897B", "#00ACC1"], borderWidth: 0 }]
+  },
+  options: { plugins: { legend: { position: "bottom" } }, cutout: "65%" }
+});
+</script>
+{% endblock %}
+
+

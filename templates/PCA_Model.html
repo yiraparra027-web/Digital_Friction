@@ -1,0 +1,307 @@
+{% extends "base.html" %}
+
+{% block title %}Mapa de madurez — Evaluación empresarial{% endblock %}
+
+{% block content %}
+
+<!-- ENCABEZADO -->
+<section class="py-5" style="background:linear-gradient(135deg,#0B3D91 0%,#1565C0 60%,#0B3D91 100%);color:#fff;">
+  <div class="container">
+    <div class="row align-items-center">
+      <div class="col-lg-8">
+        <span class="badge bg-brand px-3 py-2 mb-3 fs-6">Evaluación empresarial · Mapa de madurez</span>
+        <h1 class="display-4 fw-bold mb-3">
+          Mapa de madurez
+          <span style="color:#00ACC1;">Análisis de Componentes Principales (PCA)</span>
+        </h1>
+        <p class="lead opacity-75">
+          Condensa los <strong>{{ results.n_features }} indicadores correlacionados</strong> del tejido empresarial de
+          <strong>Chía y Sabana Centro</strong> en 2 ejes principales que retienen el
+          <strong>{{ results.total_retained_variance }} % de la varianza</strong>:
+          <strong>CP1 (Madurez Tecnológica)</strong> y <strong>CP2 (Capacidad Competitiva)</strong>.
+        </p>
+      </div>
+      <div class="col-lg-4 mt-4 mt-lg-0">
+        <div class="row g-3">
+          <div class="col-6">
+            <div class="rounded-4 p-3 text-center" style="background:rgba(255,255,255,.08);">
+              <div class="fs-2 fw-bold text-accent">{{ results.total_entities }}</div>
+              <div class="small opacity-75">Empresas (2026)</div>
+            </div>
+          </div>
+          <div class="col-6">
+            <div class="rounded-4 p-3 text-center" style="background:rgba(255,255,255,.08);">
+              <div class="fs-2 fw-bold text-accent">{{ results.n_features }}</div>
+              <div class="small opacity-75">Variables Entrada</div>
+            </div>
+          </div>
+          <div class="col-6">
+            <div class="rounded-4 p-3 text-center" style="background:rgba(255,255,255,.08);">
+              <div class="fs-2 fw-bold text-warning">{{ results.pca_variance_individual[0] }}%</div>
+              <div class="small opacity-75">Varianza CP1</div>
+            </div>
+          </div>
+          <div class="col-6">
+            <div class="rounded-4 p-3 text-center" style="background:rgba(255,255,255,.08);">
+              <div class="fs-2 fw-bold text-info">{{ results.total_retained_variance }}%</div>
+              <div class="small opacity-75">Varianza Retenida</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="container py-5">
+
+<!-- SECCIÓN 1 · PARTICIÓN Y VARIABLES -->
+<section class="mb-5">
+  <div class="d-flex align-items-center gap-3 mb-4">
+    <div class="rounded-circle d-flex align-items-center justify-content-center fw-bold text-white"
+         style="width:40px;height:40px;background:#0B3D91;font-size:1.1rem;">1</div>
+    <h2 class="fw-bold mb-0">Partición de Datos y Selección de Variables</h2>
+  </div>
+
+  <div class="row g-4">
+    <div class="col-lg-5">
+      <div class="card border-0 shadow-sm h-100 p-4">
+        <h5 class="fw-bold mb-3"><i class="bi bi-database me-2 text-accent"></i>Preparación del Conjunto de Datos</h5>
+        <p class="text-muted">
+          De la vigencia <strong>2026</strong> se extraen las <strong>{{ results.total_entities }} empresas de Sabana Centro</strong>
+          (incluidas <strong>{{ results.chia_entities }} empresas de Chía</strong>) y los <strong>{{ results.n_features }} indicadores numéricos</strong>
+          del diagnóstico digital empresarial.
+        </p>
+        <p class="text-muted">
+          La muestra se divide en <strong>80 % entrenamiento ({{ results.train_size }})</strong> y
+          <strong>20 % prueba ({{ results.test_size }})</strong> para comprobar que los ejes extraídos generalizan sin sobreajuste.
+        </p>
+        <div class="mt-2">
+          <h6 class="fw-semibold">Indicadores incorporados:</h6>
+          <ul class="text-muted small ps-3 mb-0">
+            {% for nombre in results.feature_names %}
+            <li>{{ nombre }}</li>
+            {% endfor %}
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-lg-4">
+      <div class="card border-0 shadow-sm h-100 p-4 text-center">
+        <h5 class="fw-bold mb-3">Partición Entrenamiento / Prueba</h5>
+        <canvas id="splitChart" style="max-height:200px;"></canvas>
+        <div class="row mt-3 text-center g-2">
+          <div class="col-6">
+            <div class="fw-bold fs-4 text-accent">{{ results.train_size }}</div>
+            <div class="small text-muted">Entrenamiento (80 %)</div>
+          </div>
+          <div class="col-6">
+            <div class="fw-bold fs-4 text-info">{{ results.test_size }}</div>
+            <div class="small text-muted">Prueba (20 %)</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-lg-3">
+      <div class="card border-0 shadow-sm h-100 p-4">
+        <h5 class="fw-bold mb-3"><i class="bi bi-arrows-angle-contract me-2 text-accent"></i>Aporte por Eje</h5>
+        <p class="text-muted small">Estandarización previa (media 0 y desviación 1) y proyección en 2 componentes principales.</p>
+        <div class="mt-3">
+          <div class="d-flex justify-content-between mb-1">
+            <span class="small">CP1 (Madurez)</span><span class="small fw-bold text-accent">{{ results.pca_variance_individual[0] }}%</span>
+          </div>
+          <div class="progress mb-3" style="height:8px;">
+            <div class="progress-bar bg-brand" style="width:{{ results.pca_variance_individual[0] }}%"></div>
+          </div>
+          <div class="d-flex justify-content-between mb-1">
+            <span class="small">CP2 (Competitividad)</span><span class="small fw-bold text-info">{{ results.pca_variance_individual[1] }}%</span>
+          </div>
+          <div class="progress mb-3" style="height:8px;">
+            <div class="progress-bar bg-info" style="width:15%"></div>
+          </div>
+          <div class="alert border-0 rounded-3 p-2 small mb-0" style="background:#F5F7FA;">
+            <i class="bi bi-info-circle me-1 text-accent"></i>
+            CP1 + CP2 conservan el <strong>{{ results.total_retained_variance }}%</strong> de la información original.
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SECCIÓN 2 · ENTRENAMIENTO Y VARIANZA EXPLICADA -->
+<section class="mb-5">
+  <div class="d-flex align-items-center gap-3 mb-4">
+    <div class="rounded-circle d-flex align-items-center justify-content-center fw-bold text-white"
+         style="width:40px;height:40px;background:#0B3D91;font-size:1.1rem;">2</div>
+    <h2 class="fw-bold mb-0">Proceso de Entrenamiento y Varianza Explicada</h2>
+  </div>
+
+  <div class="row g-4">
+    <div class="col-lg-6">
+      <div class="card border-0 shadow-sm p-4 h-100">
+        <h5 class="fw-bold mb-3"><i class="bi bi-diagram-3 me-2 text-accent"></i>Flujo de Transformación</h5>
+        <p class="text-muted small">
+          <strong>Estandarización previa:</strong> Todos los puntajes se normalizan a escala Z para evitar que un indicador con mayor dispersión domine la matriz de covarianza.
+        </p>
+        <div class="row g-3 mb-3">
+          <div class="col-md-4">
+            <div class="rounded-3 p-3 text-center border border-accent-subtle" style="background:#F5F7FA;">
+              <div class="fw-bold text-accent">Paso 1</div>
+              <div class="small fw-semibold">Normalización Z</div>
+              <div class="text-muted small">z = (x - μ) / σ</div>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="rounded-3 p-3 text-center border border-accent-subtle" style="background:#F5F7FA;">
+              <div class="fw-bold text-accent">Paso 2</div>
+              <div class="small fw-semibold">Covarianza</div>
+              <div class="text-muted small">C = (1/(n-1)) XᵀX</div>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="rounded-3 p-3 text-center border border-accent-subtle" style="background:#F5F7FA;">
+              <div class="fw-bold text-accent">Paso 3</div>
+              <div class="small fw-semibold">Autovectores</div>
+              <div class="text-muted small">C·v = λ·v</div>
+            </div>
+          </div>
+        </div>
+        <img src="{{ url_for('static', filename='img/pca/scree_variance.png') }}"
+             alt="Gráfico de sedimentación de varianza explicada PCA"
+             class="img-fluid rounded-3 border mt-auto">
+      </div>
+    </div>
+
+    <div class="col-lg-6">
+      <div class="card border-0 shadow-sm p-4 h-100">
+        <h5 class="fw-bold mb-3"><i class="bi bi-bar-chart-line me-2 text-accent"></i>Varianza Individual y Acumulada</h5>
+        <canvas id="varianceChart" style="max-height:260px;"></canvas>
+        <div class="alert alert-success border-0 small mt-3 mb-0" style="background:#F5F7FA;">
+          <strong>¿Por qué 2 componentes?</strong><br>
+          • <strong>CP1 ({{ results.pca_variance_individual[0] }} %):</strong> Resume el nivel integral de adopción tecnológica.<br>
+          • <strong>CP2 ({{ results.pca_variance_individual[1] }} %):</strong> Contrasta presencia digital externa frente a gestión interna y ciberseguridad.<br>
+          • Elimina multicolinealidad y eleva la cohesión del agrupamiento posterior.
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SECCIÓN 3 · CARGAS FACTORIALES Y PROYECCIÓN 2D -->
+<section class="mb-5">
+  <div class="d-flex align-items-center gap-3 mb-4">
+    <div class="rounded-circle d-flex align-items-center justify-content-center fw-bold text-white"
+         style="width:40px;height:40px;background:#0B3D91;font-size:1.1rem;">3</div>
+    <h2 class="fw-bold mb-0">Cargas Factoriales y Proyección Empresarial 2D</h2>
+  </div>
+
+  <div class="row g-4 mb-4">
+    <div class="col-lg-6">
+      <div class="card border-0 shadow-sm p-4 h-100">
+        <h5 class="fw-bold mb-2"><i class="bi bi-bar-chart-steps me-2 text-accent"></i>Peso de cada Indicador (CP1 vs CP2)</h5>
+        <p class="text-muted small mb-3">Contribución de los 8 indicadores empresariales en la construcción de cada eje.</p>
+        <canvas id="loadingsBar" style="max-height:320px;"></canvas>
+      </div>
+    </div>
+    <div class="col-lg-6">
+      <div class="card border-0 shadow-sm p-4 h-100">
+        <h5 class="fw-bold mb-2"><i class="bi bi-vector-pen me-2 text-accent"></i>Mapa Biplot (Empresas y Vectores)</h5>
+        <p class="text-muted small mb-3">Proyección de las empresas junto con la dirección de los vectores de cada indicador.</p>
+        <img src="{{ url_for('static', filename='img/pca/loadings_biplot.png') }}"
+             alt="Biplot PCA de empresas y vectores de indicadores"
+             class="img-fluid rounded-3 border mt-auto">
+      </div>
+    </div>
+  </div>
+
+  <div class="card border-0 shadow-sm p-4">
+    <h5 class="fw-bold mb-3"><i class="bi bi-table me-2 text-accent"></i>Tabla de Cargas Factoriales</h5>
+    <div class="table-responsive">
+      <table class="table table-sm table-hover align-middle mb-0">
+        <thead class="table-light">
+          <tr>
+            <th>Indicador Empresarial</th>
+            <th class="text-end">Carga CP1 (Madurez)</th>
+            <th class="text-end">Carga CP2 (Competitividad)</th>
+            <th class="text-center">Dirección en CP2</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for f in results.feature_loadings %}
+          <tr>
+            <td class="fw-semibold">{{ f.name }}</td>
+            <td class="text-end text-accent fw-bold">{{ "%.4f"|format(f.loading_pc1) }}</td>
+            <td class="text-end {{ 'text-primary' if f.loading_pc2 >= 0 else 'text-danger' }} fw-bold">{{ "%.4f"|format(f.loading_pc2) }}</td>
+            <td class="text-center small text-muted">{{ f.interpretation_pc2 }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script>
+const pcaData = {{ results | tojson }};
+
+new Chart(document.getElementById("splitChart"), {
+  type: "doughnut",
+  data: {
+    labels: ["Entrenamiento (80 %)", "Prueba (20 %)"],
+    datasets: [{ data: [pcaData.train_size, pcaData.test_size], backgroundColor: ["#00897B", "#00ACC1"], borderWidth: 0 }]
+  },
+  options: { plugins: { legend: { position: "bottom" } }, cutout: "65%" }
+});
+
+new Chart(document.getElementById("varianceChart"), {
+  type: "bar",
+  data: {
+    labels: pcaData.pca_variance_individual.map((_, i) => `CP${i + 1}`),
+    datasets: [
+      {
+        label: "Varianza Individual (%)",
+        data: pcaData.pca_variance_individual,
+        backgroundColor: "rgba(0,137,123, 0.75)",
+        borderColor: "#00897B",
+        borderWidth: 1
+      },
+      {
+        label: "Varianza Acumulada (%)",
+        data: pcaData.pca_variance_cumulative,
+        type: "line",
+        borderColor: "#F9A825",
+        borderWidth: 2,
+        tension: 0.2
+      }
+    ]
+  },
+  options: {
+    responsive: true,
+    scales: { y: { beginAtZero: true, max: 105, title: { display: true, text: "Varianza (%)" } } }
+  }
+});
+
+new Chart(document.getElementById("loadingsBar"), {
+  type: "bar",
+  data: {
+    labels: pcaData.feature_loadings.map(f => f.name),
+    datasets: [
+      { label: "Carga CP1", data: pcaData.feature_loadings.map(f => f.loading_pc1), backgroundColor: "#00897B", borderRadius: 4 },
+      { label: "Carga CP2", data: pcaData.feature_loadings.map(f => f.loading_pc2), backgroundColor: "#00ACC1", borderRadius: 4 }
+    ]
+  },
+  options: {
+    responsive: true,
+    scales: { y: { title: { display: true, text: "Peso Factorial" } } }
+  }
+});
+</script>
+{% endblock %}
+
+
